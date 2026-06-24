@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_cycle">Nuevo Ciclo</string>
+    <string name="add_terrain">Agregar Terreno</string>
+    <string name="add_transaction">Nueva Transacción</string>
+    <string name="amount">Monto</string>
+    <string name="app_name">Criba</string>
+    <string name="cancel">Cancelar</string>
+    <string name="category">Categoría</string>
+    <string name="climate">Clima</string>
+    <string name="close">Cerrar</string>
+    <string name="cycles">Ciclos de Cultivo</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="description">Descripción</string>
+    <string name="drought_stage">Etapa de sequía</string>
+    <string name="end_date">Fecha de fin</string>
+    <string name="error_login">Error al iniciar sesión. Intente de nuevo.</string>
+    <string name="expense">Gasto</string>
+    <string name="finances">Finanzas</string>
+    <string name="help">Ayuda</string>
+    <string name="income">Ingreso</string>
+    <string name="loading">Cargando…</string>
+    <string name="login_subtitle">Centraliza y optimiza la gestión de tus terrenos agrícolas</string>
+    <string name="login_title">Bienvenido a Criba</string>
+    <string name="map_title">Mis Terrenos</string>
+    <string name="net_utility">Utilidad Neta</string>
+    <string name="pests">Plagas</string>
+    <string name="phenological_state">Estado fenológico</string>
+    <string name="rainfall">Lluvia (mm)</string>
+    <string name="record_climate">Registrar Clima</string>
+    <string name="report_pest">Reportar Plaga</string>
+    <string name="roi">ROI</string>
+    <string name="save">Guardar</string>
+    <string name="severity">Severidad</string>
+    <string name="sign_in_with_google">Iniciar sesión con Google</string>
+    <string name="species">Especie</string>
+    <string name="start_date">Fecha de inicio</string>
+    <string name="sync_completed">Datos sincronizados</string>
+    <string name="sync_pending">Sincronización pendiente</string>
+    <string name="take_photo">Tomar Foto</string>
+    <string name="temperature">Temperatura (°C)</string>
+    <string name="terrain_latitude">Latitud</string>
+    <string name="terrain_longitude">Longitud</string>
+    <string name="terrain_name">Nombre del terreno</string>
+    <string name="terrain_soil_type">Tipo de suelo</string>
+    <string name="terrain_surface">Superficie (hectáreas)</string>
+    <string name="yield_efficiency">Eficiencia de Rendimiento</string>
+    <style name="Theme.Criba" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
