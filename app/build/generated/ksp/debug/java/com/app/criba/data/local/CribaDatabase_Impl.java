@@ -62,13 +62,13 @@ public final class CribaDatabase_Impl extends CribaDatabase {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_crop_cycles_terrainId` ON `crop_cycles` (`terrainId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cycleId` INTEGER NOT NULL, `type` TEXT NOT NULL, `amount` REAL NOT NULL, `category` TEXT, `description` TEXT NOT NULL, `date` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`cycleId`) REFERENCES `crop_cycles`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_transactions_cycleId` ON `transactions` (`cycleId`)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `pest_incidents` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cycleId` INTEGER NOT NULL, `name` TEXT NOT NULL, `severity` TEXT NOT NULL, `description` TEXT NOT NULL, `photoLocalUri` TEXT, `date` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`cycleId`) REFERENCES `crop_cycles`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `pest_incidents` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cycleId` INTEGER NOT NULL, `name` TEXT NOT NULL, `severity` TEXT NOT NULL, `description` TEXT NOT NULL, `photoLocalUri` TEXT, `latitude` REAL, `longitude` REAL, `date` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`cycleId`) REFERENCES `crop_cycles`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_pest_incidents_cycleId` ON `pest_incidents` (`cycleId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `climate_records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cycleId` INTEGER NOT NULL, `rainfall` REAL NOT NULL, `temperature` REAL NOT NULL, `droughtStage` TEXT NOT NULL, `date` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, FOREIGN KEY(`cycleId`) REFERENCES `crop_cycles`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_climate_records_cycleId` ON `climate_records` (`cycleId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`id` TEXT NOT NULL, `email` TEXT NOT NULL, `passwordHash` TEXT, `displayName` TEXT NOT NULL, `photoUrl` TEXT, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '595cfee92e7d5d97f8b8e214227907d1')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c09f00a025c9e3d7b02b27238cf30f6b')");
       }
 
       @Override
@@ -181,13 +181,15 @@ public final class CribaDatabase_Impl extends CribaDatabase {
                   + " Expected:\n" + _infoTransactions + "\n"
                   + " Found:\n" + _existingTransactions);
         }
-        final HashMap<String, TableInfo.Column> _columnsPestIncidents = new HashMap<String, TableInfo.Column>(8);
+        final HashMap<String, TableInfo.Column> _columnsPestIncidents = new HashMap<String, TableInfo.Column>(10);
         _columnsPestIncidents.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("cycleId", new TableInfo.Column("cycleId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("severity", new TableInfo.Column("severity", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("description", new TableInfo.Column("description", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("photoLocalUri", new TableInfo.Column("photoLocalUri", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPestIncidents.put("latitude", new TableInfo.Column("latitude", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPestIncidents.put("longitude", new TableInfo.Column("longitude", "REAL", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("date", new TableInfo.Column("date", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPestIncidents.put("isSynced", new TableInfo.Column("isSynced", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysPestIncidents = new HashSet<TableInfo.ForeignKey>(1);
@@ -237,7 +239,7 @@ public final class CribaDatabase_Impl extends CribaDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "595cfee92e7d5d97f8b8e214227907d1", "baef81e457cb70f55f5a29c345e07e57");
+    }, "c09f00a025c9e3d7b02b27238cf30f6b", "d2a3fa0607615965dc4c08cef631ab28");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

@@ -24,6 +24,8 @@ data class PestEntity(
     val severity: String,     // BAJO, MEDIO, CRITICO
     val description: String,
     val photoLocalUri: String?,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val date: Long,
     val isSynced: Boolean = false
 )

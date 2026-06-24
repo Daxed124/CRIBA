@@ -14,6 +14,7 @@ import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import com.app.criba.data.local.entity.PestEntity;
 import java.lang.Class;
+import java.lang.Double;
 import java.lang.Exception;
 import java.lang.Long;
 import java.lang.Object;
@@ -48,7 +49,7 @@ public final class PestDao_Impl implements PestDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `pest_incidents` (`id`,`cycleId`,`name`,`severity`,`description`,`photoLocalUri`,`date`,`isSynced`) VALUES (nullif(?, 0),?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `pest_incidents` (`id`,`cycleId`,`name`,`severity`,`description`,`photoLocalUri`,`latitude`,`longitude`,`date`,`isSynced`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -64,16 +65,26 @@ public final class PestDao_Impl implements PestDao {
         } else {
           statement.bindString(6, entity.getPhotoLocalUri());
         }
-        statement.bindLong(7, entity.getDate());
+        if (entity.getLatitude() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindDouble(7, entity.getLatitude());
+        }
+        if (entity.getLongitude() == null) {
+          statement.bindNull(8);
+        } else {
+          statement.bindDouble(8, entity.getLongitude());
+        }
+        statement.bindLong(9, entity.getDate());
         final int _tmp = entity.isSynced() ? 1 : 0;
-        statement.bindLong(8, _tmp);
+        statement.bindLong(10, _tmp);
       }
     };
     this.__updateAdapterOfPestEntity = new EntityDeletionOrUpdateAdapter<PestEntity>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `pest_incidents` SET `id` = ?,`cycleId` = ?,`name` = ?,`severity` = ?,`description` = ?,`photoLocalUri` = ?,`date` = ?,`isSynced` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `pest_incidents` SET `id` = ?,`cycleId` = ?,`name` = ?,`severity` = ?,`description` = ?,`photoLocalUri` = ?,`latitude` = ?,`longitude` = ?,`date` = ?,`isSynced` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -89,10 +100,20 @@ public final class PestDao_Impl implements PestDao {
         } else {
           statement.bindString(6, entity.getPhotoLocalUri());
         }
-        statement.bindLong(7, entity.getDate());
+        if (entity.getLatitude() == null) {
+          statement.bindNull(7);
+        } else {
+          statement.bindDouble(7, entity.getLatitude());
+        }
+        if (entity.getLongitude() == null) {
+          statement.bindNull(8);
+        } else {
+          statement.bindDouble(8, entity.getLongitude());
+        }
+        statement.bindLong(9, entity.getDate());
         final int _tmp = entity.isSynced() ? 1 : 0;
-        statement.bindLong(8, _tmp);
-        statement.bindLong(9, entity.getId());
+        statement.bindLong(10, _tmp);
+        statement.bindLong(11, entity.getId());
       }
     };
     this.__preparedStmtOfDelete = new SharedSQLiteStatement(__db) {
@@ -217,6 +238,8 @@ public final class PestDao_Impl implements PestDao {
           final int _cursorIndexOfSeverity = CursorUtil.getColumnIndexOrThrow(_cursor, "severity");
           final int _cursorIndexOfDescription = CursorUtil.getColumnIndexOrThrow(_cursor, "description");
           final int _cursorIndexOfPhotoLocalUri = CursorUtil.getColumnIndexOrThrow(_cursor, "photoLocalUri");
+          final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+          final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
           final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, "date");
           final int _cursorIndexOfIsSynced = CursorUtil.getColumnIndexOrThrow(_cursor, "isSynced");
           final List<PestEntity> _result = new ArrayList<PestEntity>(_cursor.getCount());
@@ -238,13 +261,25 @@ public final class PestDao_Impl implements PestDao {
             } else {
               _tmpPhotoLocalUri = _cursor.getString(_cursorIndexOfPhotoLocalUri);
             }
+            final Double _tmpLatitude;
+            if (_cursor.isNull(_cursorIndexOfLatitude)) {
+              _tmpLatitude = null;
+            } else {
+              _tmpLatitude = _cursor.getDouble(_cursorIndexOfLatitude);
+            }
+            final Double _tmpLongitude;
+            if (_cursor.isNull(_cursorIndexOfLongitude)) {
+              _tmpLongitude = null;
+            } else {
+              _tmpLongitude = _cursor.getDouble(_cursorIndexOfLongitude);
+            }
             final long _tmpDate;
             _tmpDate = _cursor.getLong(_cursorIndexOfDate);
             final boolean _tmpIsSynced;
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsSynced);
             _tmpIsSynced = _tmp != 0;
-            _item = new PestEntity(_tmpId,_tmpCycleId,_tmpName,_tmpSeverity,_tmpDescription,_tmpPhotoLocalUri,_tmpDate,_tmpIsSynced);
+            _item = new PestEntity(_tmpId,_tmpCycleId,_tmpName,_tmpSeverity,_tmpDescription,_tmpPhotoLocalUri,_tmpLatitude,_tmpLongitude,_tmpDate,_tmpIsSynced);
             _result.add(_item);
           }
           return _result;
@@ -277,6 +312,8 @@ public final class PestDao_Impl implements PestDao {
           final int _cursorIndexOfSeverity = CursorUtil.getColumnIndexOrThrow(_cursor, "severity");
           final int _cursorIndexOfDescription = CursorUtil.getColumnIndexOrThrow(_cursor, "description");
           final int _cursorIndexOfPhotoLocalUri = CursorUtil.getColumnIndexOrThrow(_cursor, "photoLocalUri");
+          final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+          final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
           final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, "date");
           final int _cursorIndexOfIsSynced = CursorUtil.getColumnIndexOrThrow(_cursor, "isSynced");
           final List<PestEntity> _result = new ArrayList<PestEntity>(_cursor.getCount());
@@ -298,13 +335,25 @@ public final class PestDao_Impl implements PestDao {
             } else {
               _tmpPhotoLocalUri = _cursor.getString(_cursorIndexOfPhotoLocalUri);
             }
+            final Double _tmpLatitude;
+            if (_cursor.isNull(_cursorIndexOfLatitude)) {
+              _tmpLatitude = null;
+            } else {
+              _tmpLatitude = _cursor.getDouble(_cursorIndexOfLatitude);
+            }
+            final Double _tmpLongitude;
+            if (_cursor.isNull(_cursorIndexOfLongitude)) {
+              _tmpLongitude = null;
+            } else {
+              _tmpLongitude = _cursor.getDouble(_cursorIndexOfLongitude);
+            }
             final long _tmpDate;
             _tmpDate = _cursor.getLong(_cursorIndexOfDate);
             final boolean _tmpIsSynced;
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsSynced);
             _tmpIsSynced = _tmp != 0;
-            _item = new PestEntity(_tmpId,_tmpCycleId,_tmpName,_tmpSeverity,_tmpDescription,_tmpPhotoLocalUri,_tmpDate,_tmpIsSynced);
+            _item = new PestEntity(_tmpId,_tmpCycleId,_tmpName,_tmpSeverity,_tmpDescription,_tmpPhotoLocalUri,_tmpLatitude,_tmpLongitude,_tmpDate,_tmpIsSynced);
             _result.add(_item);
           }
           return _result;

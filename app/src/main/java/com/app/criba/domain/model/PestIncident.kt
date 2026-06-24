@@ -7,6 +7,8 @@ data class PestIncident(
     val severity: Severity,
     val description: String,
     val photoUri: String?,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val date: Long, // epoch millis
     val isSynced: Boolean = false
 )

@@ -40,10 +40,20 @@ fun CribaNavGraph(
         }
 
         composable(Screen.Parcelas.route) {
-            // Placeholder for Phase 6
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Pantalla de Parcelas (En Desarrollo)")
-            }
+            com.app.criba.presentation.ui.parcelas.ParcelasScreen(
+                onNavigateToDetalle = { terrainId -> navController.navigate(Screen.DetalleParcela.createRoute(terrainId)) }
+            )
+        }
+        
+        composable(Screen.DetalleParcela.route) { backStackEntry ->
+            val terrainId = backStackEntry.arguments?.getString("terrenoId")?.toLongOrNull() ?: 0L
+            com.app.criba.presentation.ui.parcelas.DetalleParcelaScreen(
+                terrenoId = terrainId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToPlagas = { cycleId -> navController.navigate(Screen.Pest.createRoute(cycleId)) },
+                onNavigateToClima = { cycleId -> navController.navigate(Screen.Climate.createRoute(cycleId)) },
+                onNavigateToFinanzas = { cycleId -> navController.navigate(Screen.Finance.createRoute(cycleId)) }
+            )
         }
 
         composable(Screen.Historial.route) {
@@ -54,29 +64,10 @@ fun CribaNavGraph(
         }
 
         composable(Screen.Salud.route) {
-            // Placeholder for Phase 7
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Pantalla de Salud y Plagas (En Desarrollo)")
-            }
+            com.app.criba.presentation.plagas.SaludScreen()
         }
 
-        composable(Screen.TerrainForm.route) {
-            com.app.criba.presentation.ui.terrain.TerrainFormScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
 
-        composable(Screen.Cycle.route) { backStackEntry ->
-            val terrainId = backStackEntry.arguments?.getString("terrainId")?.toLongOrNull() ?: 0L
-            com.app.criba.presentation.ui.cycle.CycleScreen(
-                terrainId = terrainId,
-                onNavigateBack = { navController.popBackStack() },
-                onNavigateToFinance = { cycleId -> navController.navigate(Screen.Finance.createRoute(cycleId)) },
-                onNavigateToPest = { cycleId -> navController.navigate(Screen.Pest.createRoute(cycleId)) },
-                onNavigateToClimate = { cycleId -> navController.navigate(Screen.Climate.createRoute(cycleId)) },
-                onNavigateToDashboard = { _ -> navController.navigate(Screen.Dashboard.route) }
-            )
-        }
 
         composable(Screen.Finance.route) { backStackEntry ->
             val cycleId = backStackEntry.arguments?.getString("cycleId")?.toLongOrNull() ?: 0L
@@ -88,8 +79,16 @@ fun CribaNavGraph(
 
         composable(Screen.Pest.route) { backStackEntry ->
             val cycleId = backStackEntry.arguments?.getString("cycleId")?.toLongOrNull() ?: 0L
-            com.app.criba.presentation.ui.pest.PestScreen(
-                cycleId = cycleId,
+            com.app.criba.presentation.plagas.PlagasListScreen(
+                cicloId = cycleId,
+                onNavigateToRegistrarPlaga = { navController.navigate(Screen.RegistrarPlaga.createRoute(cycleId)) }
+            )
+        }
+
+        composable(Screen.RegistrarPlaga.route) { backStackEntry ->
+            val cycleId = backStackEntry.arguments?.getString("cycleId")?.toLongOrNull() ?: 0L
+            com.app.criba.presentation.plagas.RegistrarPlagaScreen(
+                cicloId = cycleId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -104,8 +103,8 @@ fun CribaNavGraph(
         
         composable(Screen.Map.route) {
             com.app.criba.presentation.ui.map.MapScreen(
-                onNavigateToTerrainForm = { navController.navigate(Screen.TerrainForm.route) },
-                onNavigateToCycle = { terrainId -> navController.navigate(Screen.Cycle.createRoute(terrainId)) }
+                onNavigateToTerrainForm = { navController.navigate(Screen.Parcelas.route) },
+                onNavigateToCycle = { terrainId -> navController.navigate(Screen.DetalleParcela.createRoute(terrainId)) }
             )
         }
     }

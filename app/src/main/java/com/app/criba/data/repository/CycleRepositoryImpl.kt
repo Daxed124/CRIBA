@@ -15,6 +15,10 @@ class CycleRepositoryImpl @Inject constructor(
     private val cycleDao: CycleDao
 ) : CycleRepository {
 
+    override fun getAllCycles(): Flow<List<CropCycle>> {
+        return cycleDao.getAllCycles().map { list -> list.map { it.toDomain() } }
+    }
+
     override fun getCyclesByTerrainId(terrainId: Long): Flow<List<CropCycle>> {
         return cycleDao.getCyclesByTerrainId(terrainId).map { list -> list.map { it.toDomain() } }
     }

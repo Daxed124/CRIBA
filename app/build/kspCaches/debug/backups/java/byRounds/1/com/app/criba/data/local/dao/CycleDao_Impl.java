@@ -210,6 +210,69 @@ public final class CycleDao_Impl implements CycleDao {
   }
 
   @Override
+  public Flow<List<CycleEntity>> getAllCycles() {
+    final String _sql = "SELECT * FROM crop_cycles ORDER BY startDate DESC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"crop_cycles"}, new Callable<List<CycleEntity>>() {
+      @Override
+      @NonNull
+      public List<CycleEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTerrainId = CursorUtil.getColumnIndexOrThrow(_cursor, "terrainId");
+          final int _cursorIndexOfSpecies = CursorUtil.getColumnIndexOrThrow(_cursor, "species");
+          final int _cursorIndexOfStartDate = CursorUtil.getColumnIndexOrThrow(_cursor, "startDate");
+          final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfPhenologicalState = CursorUtil.getColumnIndexOrThrow(_cursor, "phenologicalState");
+          final int _cursorIndexOfHarvestedVolumeKg = CursorUtil.getColumnIndexOrThrow(_cursor, "harvestedVolumeKg");
+          final int _cursorIndexOfIsSynced = CursorUtil.getColumnIndexOrThrow(_cursor, "isSynced");
+          final List<CycleEntity> _result = new ArrayList<CycleEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final CycleEntity _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final long _tmpTerrainId;
+            _tmpTerrainId = _cursor.getLong(_cursorIndexOfTerrainId);
+            final String _tmpSpecies;
+            _tmpSpecies = _cursor.getString(_cursorIndexOfSpecies);
+            final long _tmpStartDate;
+            _tmpStartDate = _cursor.getLong(_cursorIndexOfStartDate);
+            final Long _tmpEndDate;
+            if (_cursor.isNull(_cursorIndexOfEndDate)) {
+              _tmpEndDate = null;
+            } else {
+              _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
+            }
+            final String _tmpPhenologicalState;
+            _tmpPhenologicalState = _cursor.getString(_cursorIndexOfPhenologicalState);
+            final Double _tmpHarvestedVolumeKg;
+            if (_cursor.isNull(_cursorIndexOfHarvestedVolumeKg)) {
+              _tmpHarvestedVolumeKg = null;
+            } else {
+              _tmpHarvestedVolumeKg = _cursor.getDouble(_cursorIndexOfHarvestedVolumeKg);
+            }
+            final boolean _tmpIsSynced;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsSynced);
+            _tmpIsSynced = _tmp != 0;
+            _item = new CycleEntity(_tmpId,_tmpTerrainId,_tmpSpecies,_tmpStartDate,_tmpEndDate,_tmpPhenologicalState,_tmpHarvestedVolumeKg,_tmpIsSynced);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
   public Flow<List<CycleEntity>> getCyclesByTerrainId(final long terrainId) {
     final String _sql = "SELECT * FROM crop_cycles WHERE terrainId = ? ORDER BY startDate DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);

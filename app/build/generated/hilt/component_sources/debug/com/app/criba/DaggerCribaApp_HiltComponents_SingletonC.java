@@ -40,17 +40,14 @@ import com.app.criba.di.NetworkModule_ProvideApiServiceFactory;
 import com.app.criba.di.NetworkModule_ProvideOkHttpClientFactory;
 import com.app.criba.di.NetworkModule_ProvideRetrofitFactory;
 import com.app.criba.domain.usecase.AddTransactionUseCase;
-import com.app.criba.domain.usecase.CreateCycleUseCase;
-import com.app.criba.domain.usecase.CreateTerrainUseCase;
 import com.app.criba.domain.usecase.GetTerrainsUseCase;
 import com.app.criba.domain.usecase.RecordClimateUseCase;
 import com.app.criba.domain.usecase.ReportPestUseCase;
-import com.app.criba.domain.usecase.UpdateCycleStateUseCase;
+import com.app.criba.presentation.plagas.PlagasViewModel;
+import com.app.criba.presentation.plagas.PlagasViewModel_HiltModules;
 import com.app.criba.presentation.ui.MainActivity;
 import com.app.criba.presentation.viewmodel.ClimateViewModel;
 import com.app.criba.presentation.viewmodel.ClimateViewModel_HiltModules;
-import com.app.criba.presentation.viewmodel.CycleViewModel;
-import com.app.criba.presentation.viewmodel.CycleViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.DashboardViewModel;
 import com.app.criba.presentation.viewmodel.DashboardViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.FinanceViewModel;
@@ -59,10 +56,11 @@ import com.app.criba.presentation.viewmodel.LoginViewModel;
 import com.app.criba.presentation.viewmodel.LoginViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.MapViewModel;
 import com.app.criba.presentation.viewmodel.MapViewModel_HiltModules;
+import com.app.criba.presentation.viewmodel.ParcelasViewModel;
+import com.app.criba.presentation.viewmodel.ParcelasViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.PestViewModel;
 import com.app.criba.presentation.viewmodel.PestViewModel_HiltModules;
-import com.app.criba.presentation.viewmodel.TerrainFormViewModel;
-import com.app.criba.presentation.viewmodel.TerrainFormViewModel_HiltModules;
+import com.app.criba.util.LocationHelper;
 import dagger.hilt.android.ActivityRetainedLifecycle;
 import dagger.hilt.android.ViewModelLifecycle;
 import dagger.hilt.android.internal.builders.ActivityComponentBuilder;
@@ -426,7 +424,7 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(8).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ClimateViewModel, ClimateViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_CycleViewModel, CycleViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_DashboardViewModel, DashboardViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_FinanceViewModel, FinanceViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_LoginViewModel, LoginViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_MapViewModel, MapViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_PestViewModel, PestViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_TerrainFormViewModel, TerrainFormViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(8).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ClimateViewModel, ClimateViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_DashboardViewModel, DashboardViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_FinanceViewModel, FinanceViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_LoginViewModel, LoginViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_MapViewModel, MapViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ParcelasViewModel, ParcelasViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_PestViewModel, PestViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_app_criba_presentation_plagas_PlagasViewModel, PlagasViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -446,27 +444,21 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_app_criba_presentation_viewmodel_CycleViewModel = "com.app.criba.presentation.viewmodel.CycleViewModel";
-
-      static String com_app_criba_presentation_viewmodel_DashboardViewModel = "com.app.criba.presentation.viewmodel.DashboardViewModel";
-
       static String com_app_criba_presentation_viewmodel_LoginViewModel = "com.app.criba.presentation.viewmodel.LoginViewModel";
 
       static String com_app_criba_presentation_viewmodel_PestViewModel = "com.app.criba.presentation.viewmodel.PestViewModel";
 
-      static String com_app_criba_presentation_viewmodel_ClimateViewModel = "com.app.criba.presentation.viewmodel.ClimateViewModel";
+      static String com_app_criba_presentation_viewmodel_DashboardViewModel = "com.app.criba.presentation.viewmodel.DashboardViewModel";
 
       static String com_app_criba_presentation_viewmodel_FinanceViewModel = "com.app.criba.presentation.viewmodel.FinanceViewModel";
 
+      static String com_app_criba_presentation_plagas_PlagasViewModel = "com.app.criba.presentation.plagas.PlagasViewModel";
+
       static String com_app_criba_presentation_viewmodel_MapViewModel = "com.app.criba.presentation.viewmodel.MapViewModel";
 
-      static String com_app_criba_presentation_viewmodel_TerrainFormViewModel = "com.app.criba.presentation.viewmodel.TerrainFormViewModel";
+      static String com_app_criba_presentation_viewmodel_ClimateViewModel = "com.app.criba.presentation.viewmodel.ClimateViewModel";
 
-      @KeepFieldType
-      CycleViewModel com_app_criba_presentation_viewmodel_CycleViewModel2;
-
-      @KeepFieldType
-      DashboardViewModel com_app_criba_presentation_viewmodel_DashboardViewModel2;
+      static String com_app_criba_presentation_viewmodel_ParcelasViewModel = "com.app.criba.presentation.viewmodel.ParcelasViewModel";
 
       @KeepFieldType
       LoginViewModel com_app_criba_presentation_viewmodel_LoginViewModel2;
@@ -475,16 +467,22 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
       PestViewModel com_app_criba_presentation_viewmodel_PestViewModel2;
 
       @KeepFieldType
-      ClimateViewModel com_app_criba_presentation_viewmodel_ClimateViewModel2;
+      DashboardViewModel com_app_criba_presentation_viewmodel_DashboardViewModel2;
 
       @KeepFieldType
       FinanceViewModel com_app_criba_presentation_viewmodel_FinanceViewModel2;
 
       @KeepFieldType
+      PlagasViewModel com_app_criba_presentation_plagas_PlagasViewModel2;
+
+      @KeepFieldType
       MapViewModel com_app_criba_presentation_viewmodel_MapViewModel2;
 
       @KeepFieldType
-      TerrainFormViewModel com_app_criba_presentation_viewmodel_TerrainFormViewModel2;
+      ClimateViewModel com_app_criba_presentation_viewmodel_ClimateViewModel2;
+
+      @KeepFieldType
+      ParcelasViewModel com_app_criba_presentation_viewmodel_ParcelasViewModel2;
     }
   }
 
@@ -499,8 +497,6 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     private Provider<ClimateViewModel> climateViewModelProvider;
 
-    private Provider<CycleViewModel> cycleViewModelProvider;
-
     private Provider<DashboardViewModel> dashboardViewModelProvider;
 
     private Provider<FinanceViewModel> financeViewModelProvider;
@@ -509,9 +505,11 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     private Provider<MapViewModel> mapViewModelProvider;
 
+    private Provider<ParcelasViewModel> parcelasViewModelProvider;
+
     private Provider<PestViewModel> pestViewModelProvider;
 
-    private Provider<TerrainFormViewModel> terrainFormViewModelProvider;
+    private Provider<PlagasViewModel> plagasViewModelProvider;
 
     private ViewModelCImpl(SingletonCImpl singletonCImpl,
         ActivityRetainedCImpl activityRetainedCImpl, SavedStateHandle savedStateHandleParam,
@@ -527,14 +525,6 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
       return new RecordClimateUseCase(singletonCImpl.climateRepositoryImplProvider.get());
     }
 
-    private CreateCycleUseCase createCycleUseCase() {
-      return new CreateCycleUseCase(singletonCImpl.cycleRepositoryImplProvider.get());
-    }
-
-    private UpdateCycleStateUseCase updateCycleStateUseCase() {
-      return new UpdateCycleStateUseCase(singletonCImpl.cycleRepositoryImplProvider.get());
-    }
-
     private AddTransactionUseCase addTransactionUseCase() {
       return new AddTransactionUseCase(singletonCImpl.transactionRepositoryImplProvider.get());
     }
@@ -547,26 +537,26 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
       return new ReportPestUseCase(singletonCImpl.pestRepositoryImplProvider.get());
     }
 
-    private CreateTerrainUseCase createTerrainUseCase() {
-      return new CreateTerrainUseCase(singletonCImpl.terrainRepositoryImplProvider.get());
+    private LocationHelper locationHelper() {
+      return new LocationHelper(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
     }
 
     @SuppressWarnings("unchecked")
     private void initialize(final SavedStateHandle savedStateHandleParam,
         final ViewModelLifecycle viewModelLifecycleParam) {
       this.climateViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
-      this.cycleViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
-      this.dashboardViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
-      this.financeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
-      this.loginViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
-      this.mapViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
+      this.dashboardViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.financeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.loginViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.mapViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
+      this.parcelasViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
       this.pestViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
-      this.terrainFormViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
+      this.plagasViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(8).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ClimateViewModel, ((Provider) climateViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_CycleViewModel, ((Provider) cycleViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_DashboardViewModel, ((Provider) dashboardViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_FinanceViewModel, ((Provider) financeViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_LoginViewModel, ((Provider) loginViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_MapViewModel, ((Provider) mapViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_PestViewModel, ((Provider) pestViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_TerrainFormViewModel, ((Provider) terrainFormViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(8).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ClimateViewModel, ((Provider) climateViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_DashboardViewModel, ((Provider) dashboardViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_FinanceViewModel, ((Provider) financeViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_LoginViewModel, ((Provider) loginViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_MapViewModel, ((Provider) mapViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_ParcelasViewModel, ((Provider) parcelasViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_viewmodel_PestViewModel, ((Provider) pestViewModelProvider)).put(LazyClassKeyProvider.com_app_criba_presentation_plagas_PlagasViewModel, ((Provider) plagasViewModelProvider)).build());
     }
 
     @Override
@@ -576,45 +566,45 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_app_criba_presentation_viewmodel_DashboardViewModel = "com.app.criba.presentation.viewmodel.DashboardViewModel";
-
       static String com_app_criba_presentation_viewmodel_MapViewModel = "com.app.criba.presentation.viewmodel.MapViewModel";
 
-      static String com_app_criba_presentation_viewmodel_FinanceViewModel = "com.app.criba.presentation.viewmodel.FinanceViewModel";
+      static String com_app_criba_presentation_plagas_PlagasViewModel = "com.app.criba.presentation.plagas.PlagasViewModel";
+
+      static String com_app_criba_presentation_viewmodel_DashboardViewModel = "com.app.criba.presentation.viewmodel.DashboardViewModel";
 
       static String com_app_criba_presentation_viewmodel_ClimateViewModel = "com.app.criba.presentation.viewmodel.ClimateViewModel";
 
-      static String com_app_criba_presentation_viewmodel_PestViewModel = "com.app.criba.presentation.viewmodel.PestViewModel";
-
-      static String com_app_criba_presentation_viewmodel_CycleViewModel = "com.app.criba.presentation.viewmodel.CycleViewModel";
-
       static String com_app_criba_presentation_viewmodel_LoginViewModel = "com.app.criba.presentation.viewmodel.LoginViewModel";
 
-      static String com_app_criba_presentation_viewmodel_TerrainFormViewModel = "com.app.criba.presentation.viewmodel.TerrainFormViewModel";
+      static String com_app_criba_presentation_viewmodel_FinanceViewModel = "com.app.criba.presentation.viewmodel.FinanceViewModel";
 
-      @KeepFieldType
-      DashboardViewModel com_app_criba_presentation_viewmodel_DashboardViewModel2;
+      static String com_app_criba_presentation_viewmodel_ParcelasViewModel = "com.app.criba.presentation.viewmodel.ParcelasViewModel";
+
+      static String com_app_criba_presentation_viewmodel_PestViewModel = "com.app.criba.presentation.viewmodel.PestViewModel";
 
       @KeepFieldType
       MapViewModel com_app_criba_presentation_viewmodel_MapViewModel2;
 
       @KeepFieldType
-      FinanceViewModel com_app_criba_presentation_viewmodel_FinanceViewModel2;
+      PlagasViewModel com_app_criba_presentation_plagas_PlagasViewModel2;
+
+      @KeepFieldType
+      DashboardViewModel com_app_criba_presentation_viewmodel_DashboardViewModel2;
 
       @KeepFieldType
       ClimateViewModel com_app_criba_presentation_viewmodel_ClimateViewModel2;
 
       @KeepFieldType
-      PestViewModel com_app_criba_presentation_viewmodel_PestViewModel2;
-
-      @KeepFieldType
-      CycleViewModel com_app_criba_presentation_viewmodel_CycleViewModel2;
-
-      @KeepFieldType
       LoginViewModel com_app_criba_presentation_viewmodel_LoginViewModel2;
 
       @KeepFieldType
-      TerrainFormViewModel com_app_criba_presentation_viewmodel_TerrainFormViewModel2;
+      FinanceViewModel com_app_criba_presentation_viewmodel_FinanceViewModel2;
+
+      @KeepFieldType
+      ParcelasViewModel com_app_criba_presentation_viewmodel_ParcelasViewModel2;
+
+      @KeepFieldType
+      PestViewModel com_app_criba_presentation_viewmodel_PestViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -641,26 +631,26 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
           case 0: // com.app.criba.presentation.viewmodel.ClimateViewModel 
           return (T) new ClimateViewModel(singletonCImpl.climateRepositoryImplProvider.get(), viewModelCImpl.recordClimateUseCase(), viewModelCImpl.savedStateHandle);
 
-          case 1: // com.app.criba.presentation.viewmodel.CycleViewModel 
-          return (T) new CycleViewModel(singletonCImpl.cycleRepositoryImplProvider.get(), viewModelCImpl.createCycleUseCase(), viewModelCImpl.updateCycleStateUseCase(), viewModelCImpl.savedStateHandle);
-
-          case 2: // com.app.criba.presentation.viewmodel.DashboardViewModel 
+          case 1: // com.app.criba.presentation.viewmodel.DashboardViewModel 
           return (T) new DashboardViewModel(singletonCImpl.terrainRepositoryImplProvider.get(), singletonCImpl.cycleRepositoryImplProvider.get(), singletonCImpl.climateRepositoryImplProvider.get(), singletonCImpl.transactionRepositoryImplProvider.get(), singletonCImpl.pestRepositoryImplProvider.get());
 
-          case 3: // com.app.criba.presentation.viewmodel.FinanceViewModel 
+          case 2: // com.app.criba.presentation.viewmodel.FinanceViewModel 
           return (T) new FinanceViewModel(singletonCImpl.transactionRepositoryImplProvider.get(), viewModelCImpl.addTransactionUseCase(), viewModelCImpl.savedStateHandle);
 
-          case 4: // com.app.criba.presentation.viewmodel.LoginViewModel 
+          case 3: // com.app.criba.presentation.viewmodel.LoginViewModel 
           return (T) new LoginViewModel(singletonCImpl.authRepositoryImplProvider.get());
 
-          case 5: // com.app.criba.presentation.viewmodel.MapViewModel 
+          case 4: // com.app.criba.presentation.viewmodel.MapViewModel 
           return (T) new MapViewModel(viewModelCImpl.getTerrainsUseCase());
+
+          case 5: // com.app.criba.presentation.viewmodel.ParcelasViewModel 
+          return (T) new ParcelasViewModel(singletonCImpl.terrainRepositoryImplProvider.get(), singletonCImpl.cycleRepositoryImplProvider.get());
 
           case 6: // com.app.criba.presentation.viewmodel.PestViewModel 
           return (T) new PestViewModel(singletonCImpl.pestRepositoryImplProvider.get(), viewModelCImpl.reportPestUseCase(), viewModelCImpl.savedStateHandle);
 
-          case 7: // com.app.criba.presentation.viewmodel.TerrainFormViewModel 
-          return (T) new TerrainFormViewModel(viewModelCImpl.createTerrainUseCase(), singletonCImpl.authRepositoryImplProvider.get());
+          case 7: // com.app.criba.presentation.plagas.PlagasViewModel 
+          return (T) new PlagasViewModel(singletonCImpl.pestRepositoryImplProvider.get(), viewModelCImpl.locationHelper());
 
           default: throw new AssertionError(id);
         }
@@ -756,9 +746,9 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
 
     private Provider<ClimateRepositoryImpl> climateRepositoryImplProvider;
 
-    private Provider<CycleRepositoryImpl> cycleRepositoryImplProvider;
-
     private Provider<TerrainRepositoryImpl> terrainRepositoryImplProvider;
+
+    private Provider<CycleRepositoryImpl> cycleRepositoryImplProvider;
 
     private Provider<TransactionRepositoryImpl> transactionRepositoryImplProvider;
 
@@ -814,8 +804,8 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
       this.syncRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<SyncRepositoryImpl>(singletonCImpl, 1));
       this.syncWorker_AssistedFactoryProvider = SingleCheck.provider(new SwitchingProvider<SyncWorker_AssistedFactory>(singletonCImpl, 0));
       this.climateRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ClimateRepositoryImpl>(singletonCImpl, 6));
-      this.cycleRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<CycleRepositoryImpl>(singletonCImpl, 7));
-      this.terrainRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<TerrainRepositoryImpl>(singletonCImpl, 8));
+      this.terrainRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<TerrainRepositoryImpl>(singletonCImpl, 7));
+      this.cycleRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<CycleRepositoryImpl>(singletonCImpl, 8));
       this.transactionRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<TransactionRepositoryImpl>(singletonCImpl, 9));
       this.pestRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<PestRepositoryImpl>(singletonCImpl, 10));
       this.authRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<AuthRepositoryImpl>(singletonCImpl, 11));
@@ -886,11 +876,11 @@ public final class DaggerCribaApp_HiltComponents_SingletonC {
           case 6: // com.app.criba.data.repository.ClimateRepositoryImpl 
           return (T) new ClimateRepositoryImpl(singletonCImpl.climateDao());
 
-          case 7: // com.app.criba.data.repository.CycleRepositoryImpl 
-          return (T) new CycleRepositoryImpl(singletonCImpl.cycleDao());
-
-          case 8: // com.app.criba.data.repository.TerrainRepositoryImpl 
+          case 7: // com.app.criba.data.repository.TerrainRepositoryImpl 
           return (T) new TerrainRepositoryImpl(singletonCImpl.terrainDao());
+
+          case 8: // com.app.criba.data.repository.CycleRepositoryImpl 
+          return (T) new CycleRepositoryImpl(singletonCImpl.cycleDao());
 
           case 9: // com.app.criba.data.repository.TransactionRepositoryImpl 
           return (T) new TransactionRepositoryImpl(singletonCImpl.transactionDao());

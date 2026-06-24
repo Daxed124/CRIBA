@@ -4,6 +4,7 @@ import com.app.criba.domain.model.CropCycle
 import kotlinx.coroutines.flow.Flow
 
 interface CycleRepository {
+    fun getAllCycles(): Flow<List<CropCycle>>
     fun getCyclesByTerrainId(terrainId: Long): Flow<List<CropCycle>>
     suspend fun getCycleById(id: Long): CropCycle?
     suspend fun insertCycle(cycle: CropCycle): Long

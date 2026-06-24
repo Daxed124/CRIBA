@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CycleDao {
+    @Query("SELECT * FROM crop_cycles ORDER BY startDate DESC")
+    fun getAllCycles(): Flow<List<CycleEntity>>
+
     @Query("SELECT * FROM crop_cycles WHERE terrainId = :terrainId ORDER BY startDate DESC")
     fun getCyclesByTerrainId(terrainId: Long): Flow<List<CycleEntity>>
 

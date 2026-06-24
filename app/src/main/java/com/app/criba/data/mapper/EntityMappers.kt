@@ -53,6 +53,7 @@ fun PestEntity.toDomain(): PestIncident = PestIncident(
     id = id, cycleId = cycleId, name = name,
     severity = Severity.valueOf(severity),
     description = description, photoUri = photoLocalUri,
+    latitude = latitude, longitude = longitude,
     date = date, isSynced = isSynced
 )
 
@@ -60,6 +61,7 @@ fun PestIncident.toEntity(): PestEntity = PestEntity(
     id = id, cycleId = cycleId, name = name,
     severity = severity.name,
     description = description, photoLocalUri = photoUri,
+    latitude = latitude, longitude = longitude,
     date = date, isSynced = isSynced
 )
 

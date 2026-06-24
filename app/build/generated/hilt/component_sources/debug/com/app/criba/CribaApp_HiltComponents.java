@@ -5,15 +5,15 @@ import com.app.criba.data.worker.SyncWorker_HiltModule;
 import com.app.criba.di.DatabaseModule;
 import com.app.criba.di.NetworkModule;
 import com.app.criba.di.RepositoryModule;
+import com.app.criba.presentation.plagas.PlagasViewModel_HiltModules;
 import com.app.criba.presentation.ui.MainActivity_GeneratedInjector;
 import com.app.criba.presentation.viewmodel.ClimateViewModel_HiltModules;
-import com.app.criba.presentation.viewmodel.CycleViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.DashboardViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.FinanceViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.LoginViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.MapViewModel_HiltModules;
+import com.app.criba.presentation.viewmodel.ParcelasViewModel_HiltModules;
 import com.app.criba.presentation.viewmodel.PestViewModel_HiltModules;
-import com.app.criba.presentation.viewmodel.TerrainFormViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
 import dagger.Module;
@@ -172,15 +172,15 @@ public final class CribaApp_HiltComponents {
           ClimateViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
-          CycleViewModel_HiltModules.KeyModule.class,
           DashboardViewModel_HiltModules.KeyModule.class,
           FinanceViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
           LoginViewModel_HiltModules.KeyModule.class,
           MapViewModel_HiltModules.KeyModule.class,
+          ParcelasViewModel_HiltModules.KeyModule.class,
           PestViewModel_HiltModules.KeyModule.class,
-          TerrainFormViewModel_HiltModules.KeyModule.class
+          PlagasViewModel_HiltModules.KeyModule.class
       }
   )
   @ActivityRetainedScoped
@@ -217,14 +217,14 @@ public final class CribaApp_HiltComponents {
   @Subcomponent(
       modules = {
           ClimateViewModel_HiltModules.BindsModule.class,
-          CycleViewModel_HiltModules.BindsModule.class,
           DashboardViewModel_HiltModules.BindsModule.class,
           FinanceViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           LoginViewModel_HiltModules.BindsModule.class,
           MapViewModel_HiltModules.BindsModule.class,
+          ParcelasViewModel_HiltModules.BindsModule.class,
           PestViewModel_HiltModules.BindsModule.class,
-          TerrainFormViewModel_HiltModules.BindsModule.class
+          PlagasViewModel_HiltModules.BindsModule.class
       }
   )
   @ViewModelScoped

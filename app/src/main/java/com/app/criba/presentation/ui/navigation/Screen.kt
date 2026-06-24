@@ -36,6 +36,9 @@ sealed class Screen(val route: String) {
     data object Pest : Screen("pest/{cycleId}") {
         fun createRoute(cycleId: Long) = "pest/$cycleId"
     }
+    data object RegistrarPlaga : Screen("registrar_plaga/{cycleId}") {
+        fun createRoute(cycleId: Long) = "registrar_plaga/$cycleId"
+    }
     data object Climate : Screen("climate/{cycleId}") {
         fun createRoute(cycleId: Long) = "climate/$cycleId"
     }
