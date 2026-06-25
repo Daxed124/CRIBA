@@ -35,7 +35,7 @@ fun CribaNavGraph(
         composable(Screen.Dashboard.route) {
             com.app.criba.presentation.ui.dashboard.DashboardScreen(
                 onNavigateToParcela = { terrainId -> navController.navigate(Screen.DetalleParcela.createRoute(terrainId)) },
-                onNavigateToMapa = { terrainId -> navController.navigate(Screen.MapaTerreno.createRoute(terrainId)) }
+                onNavigateToMapa = { navController.navigate(Screen.Map.route) }
             )
         }
 

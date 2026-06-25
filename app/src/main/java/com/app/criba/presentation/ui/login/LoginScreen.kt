@@ -93,6 +93,13 @@ fun LoginScreen(
             else -> {}
         }
 
+        // Los campos son obligatorios: el botón se habilita solo si están completos
+        val isFormValid = if (isRegisterMode) {
+            displayName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+        } else {
+            email.isNotBlank() && password.isNotBlank()
+        }
+
         Button(
             onClick = {
                 if (isRegisterMode) {
@@ -101,6 +108,7 @@ fun LoginScreen(
                     viewModel.login(email, password)
                 }
             },
+            enabled = isFormValid && uiState !is LoginUiState.Loading,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(if (isRegisterMode) "Crear Cuenta" else "Iniciar Sesión")

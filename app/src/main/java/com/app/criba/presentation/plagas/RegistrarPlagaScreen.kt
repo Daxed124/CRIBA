@@ -1,5 +1,6 @@
 package com.app.criba.presentation.plagas
 
+import android.Manifest
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -24,8 +25,11 @@ import coil.compose.AsyncImage
 import com.app.criba.domain.model.PestIncident
 import com.app.criba.domain.model.Severity
 import com.app.criba.util.CameraHelper
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun RegistrarPlagaScreen(
     cicloId: Long,
@@ -53,11 +57,22 @@ fun RegistrarPlagaScreen(
             fotoUri = currentUri
         }
     }
-    
+
     val pickMediaLauncher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             fotoUri = uri
         }
+    }
+
+    // Permisos en runtime (Android 6+): la cámara y el GPS no funcionan sin concesión explícita.
+    val cameraPermission = rememberPermissionState(Manifest.permission.CAMERA)
+    val locationPermission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+
+    val lanzarCamara = {
+        val file = cameraHelper.createImageFile()
+        val uri = cameraHelper.getUriForFile(file)
+        tempCameraUri = uri
+        takePictureLauncher.launch(uri)
     }
 
     LaunchedEffect(Unit) {
@@ -166,10 +181,11 @@ fun RegistrarPlagaScreen(
                             Icon(Icons.Default.Image, contentDescription = null, modifier = Modifier.size(48.dp), tint = Color.Gray)
                             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                                 Button(onClick = {
-                                    val file = cameraHelper.createImageFile()
-                                    val uri = cameraHelper.getUriForFile(file)
-                                    tempCameraUri = uri
-                                    takePictureLauncher.launch(uri)
+                                    if (cameraPermission.status.isGranted) {
+                                        lanzarCamara()
+                                    } else {
+                                        cameraPermission.launchPermissionRequest()
+                                    }
                                 }) {
                                     Icon(Icons.Default.CameraAlt, contentDescription = null)
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -211,7 +227,13 @@ fun RegistrarPlagaScreen(
                         } else if (uiState.currentLocation != null) {
                             Text("Lat: ${uiState.currentLocation!!.first} | Lng: ${uiState.currentLocation!!.second}")
                         } else {
-                            Button(onClick = { viewModel.obtenerUbicacionActual() }) {
+                            Button(onClick = {
+                                if (locationPermission.status.isGranted) {
+                                    viewModel.obtenerUbicacionActual()
+                                } else {
+                                    locationPermission.launchPermissionRequest()
+                                }
+                            }) {
                                 Icon(Icons.Default.LocationOn, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Detectar Ubicación")

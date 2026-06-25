@@ -33,10 +33,22 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(email: String, passwordHash: String) {
+        val emailTrimmed = email.trim()
+
+        // Validación obligatoria: no permitir acceso con campos vacíos o inválidos
+        if (emailTrimmed.isBlank() || passwordHash.isBlank()) {
+            _uiState.value = LoginUiState.Error("Ingresa tu correo y contraseña.")
+            return
+        }
+        if (!isValidEmail(emailTrimmed)) {
+            _uiState.value = LoginUiState.Error("Ingresa un correo electrónico válido.")
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
             try {
-                val user = authRepository.login(email, passwordHash)
+                val user = authRepository.login(emailTrimmed, passwordHash)
                 _uiState.value = LoginUiState.Authenticated(user)
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(e.message ?: "Error al iniciar sesión")
@@ -45,16 +57,36 @@ class LoginViewModel @Inject constructor(
     }
 
     fun register(email: String, passwordHash: String, displayName: String) {
+        val emailTrimmed = email.trim()
+        val nameTrimmed = displayName.trim()
+
+        // Validación obligatoria: todos los campos son requeridos para crear la cuenta
+        if (nameTrimmed.isBlank() || emailTrimmed.isBlank() || passwordHash.isBlank()) {
+            _uiState.value = LoginUiState.Error("Completa todos los campos para registrarte.")
+            return
+        }
+        if (!isValidEmail(emailTrimmed)) {
+            _uiState.value = LoginUiState.Error("Ingresa un correo electrónico válido.")
+            return
+        }
+        if (passwordHash.length < 6) {
+            _uiState.value = LoginUiState.Error("La contraseña debe tener al menos 6 caracteres.")
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
             try {
-                val user = authRepository.register(email, passwordHash, displayName)
+                val user = authRepository.register(emailTrimmed, passwordHash, nameTrimmed)
                 _uiState.value = LoginUiState.Authenticated(user)
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(e.message ?: "Error al registrarse")
             }
         }
     }
+
+    private fun isValidEmail(email: String): Boolean =
+        android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
     fun onSignInError(message: String) {
         _uiState.value = LoginUiState.Error(message)
