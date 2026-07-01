@@ -137,7 +137,9 @@ private val CribaShapes = Shapes(
 
 @Composable
 fun CribaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    // La app está diseñada para fondos claros; forzamos tema claro para evitar
+    // texto claro sobre fondos claros (baja visibilidad) cuando el sistema está en modo oscuro.
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme

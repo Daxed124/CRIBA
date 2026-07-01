@@ -26,7 +26,8 @@ class ClimateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val cycleId: Long = savedStateHandle.get<Long>("cycleId") ?: 0L
+    // El arg de navegación llega como texto; convertir a Long de forma segura (evita ClassCastException)
+    private val cycleId: Long = savedStateHandle.get<String>("cycleId")?.toLongOrNull() ?: 0L
 
     private val _uiState = MutableStateFlow(ClimateUiState())
     val uiState: StateFlow<ClimateUiState> = _uiState.asStateFlow()

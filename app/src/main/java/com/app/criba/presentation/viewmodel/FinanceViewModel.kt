@@ -31,7 +31,8 @@ class FinanceViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val cycleId: Long = savedStateHandle.get<Long>("cycleId") ?: 0L
+    // El arg de navegación llega como texto; convertir a Long de forma segura (evita ClassCastException)
+    private val cycleId: Long = savedStateHandle.get<String>("cycleId")?.toLongOrNull() ?: 0L
 
     // Datos para el cálculo de Erend (eficiencia de rendimiento)
     private var volumenKg: Double? = null
