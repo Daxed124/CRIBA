@@ -14,7 +14,7 @@ import com.app.criba.data.local.entity.*
         ClimateEntity::class,
         UserEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class CribaDatabase : RoomDatabase() {

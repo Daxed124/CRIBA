@@ -244,6 +244,7 @@ fun MapaTab(terrain: com.app.criba.domain.model.Terrain) {
         latitud = terrain.latitude,
         longitud = terrain.longitude,
         nombre = terrain.name,
+        polygon = terrain.polygon,
         modifier = Modifier.fillMaxSize()
     )
 }

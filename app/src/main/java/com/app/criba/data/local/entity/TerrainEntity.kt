@@ -11,6 +11,8 @@ data class TerrainEntity(
     val soilType: String,
     val latitude: Double,
     val longitude: Double,
+    // Vértices del área de la parcela: "lat,lng;lat,lng;..." (null si no se marcó)
+    val polygon: String? = null,
     val userId: String,
     val isSynced: Boolean = false
 )

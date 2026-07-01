@@ -29,6 +29,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
 
 /** Un terreno tiene ubicación válida si no está en (0,0) (placeholder). */
@@ -120,6 +121,18 @@ fun MapScreen(
                                     true
                                 }
                             )
+                        }
+                        // Áreas de parcelas marcadas con puntos
+                        state.terrains.forEach { terrain ->
+                            val area = com.app.criba.util.GeoUtils.polygonFromString(terrain.polygon)
+                            if (area.size >= 3) {
+                                Polygon(
+                                    points = area,
+                                    strokeColor = androidx.compose.ui.graphics.Color(0xFFC8A84B),
+                                    strokeWidth = 4f,
+                                    fillColor = androidx.compose.ui.graphics.Color(0x4D2D6A4F)
+                                )
+                            }
                         }
                     }
 

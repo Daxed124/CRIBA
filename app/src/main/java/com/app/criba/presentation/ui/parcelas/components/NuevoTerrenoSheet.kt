@@ -11,11 +11,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.app.criba.domain.model.Terrain
+import com.app.criba.util.GeoUtils
 import com.app.criba.util.LocationHelper
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -35,6 +38,10 @@ fun NuevoTerrenoSheet(
     var latitud by remember { mutableStateOf<Double?>(null) }
     var longitud by remember { mutableStateOf<Double?>(null) }
     var cargandoUbicacion by remember { mutableStateOf(false) }
+
+    // Área de la parcela marcada con puntos en el mapa
+    var areaPuntos by remember { mutableStateOf<List<LatLng>>(emptyList()) }
+    var showAreaDialog by remember { mutableStateOf(false) }
 
     val soilTypes = listOf("Arcilloso", "Franco", "Arenoso", "Limoso", "Franco-Arcilloso")
     var expanded by remember { mutableStateOf(false) }
@@ -135,17 +142,41 @@ fun NuevoTerrenoSheet(
                 }
             }
 
+            // Marcar el área de la parcela con puntos sobre el mapa satelital
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(onClick = { showAreaDialog = true }) {
+                    Text(if (areaPuntos.isEmpty()) "🗺 Marcar Área" else "🗺 Editar Área")
+                }
+                if (areaPuntos.size >= 3) {
+                    Text(
+                        "%d puntos · %.2f ha".format(
+                            Locale.US, areaPuntos.size, GeoUtils.areaHectares(areaPuntos)
+                        ),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                } else {
+                    Text("Sin área marcada", style = MaterialTheme.typography.labelMedium)
+                }
+            }
+
             Button(
                 onClick = {
                     if (isValid) {
+                        // Si se marcó área y no hay GPS, usa el centro del polígono como ubicación
+                        val centro = if (areaPuntos.size >= 3) GeoUtils.centroid(areaPuntos) else null
                         onGuardar(
                             Terrain(
                                 userId = "local_user",
                                 name = nombre,
                                 surface = hectareasNum ?: 0.0,
                                 soilType = tipoSuelo,
-                                latitude = latitud ?: 0.0,
-                                longitude = longitud ?: 0.0
+                                latitude = latitud ?: centro?.latitude ?: 0.0,
+                                longitude = longitud ?: centro?.longitude ?: 0.0,
+                                polygon = if (areaPuntos.size >= 3) GeoUtils.polygonToString(areaPuntos) else null
                             )
                         )
                     }
@@ -156,5 +187,21 @@ fun NuevoTerrenoSheet(
                 Text("Guardar Parcela")
             }
         }
+    }
+
+    if (showAreaDialog) {
+        SeleccionarAreaDialog(
+            initialCenter = latitud?.let { la -> longitud?.let { lo -> LatLng(la, lo) } },
+            initialPoints = areaPuntos,
+            onDismiss = { showAreaDialog = false },
+            onConfirm = { puntos ->
+                areaPuntos = puntos
+                showAreaDialog = false
+                // Autollenar hectáreas con el área calculada si el campo está vacío
+                if (hectareas.isBlank() && puntos.size >= 3) {
+                    hectareas = "%.2f".format(Locale.US, GeoUtils.areaHectares(puntos))
+                }
+            }
+        )
     }
 }

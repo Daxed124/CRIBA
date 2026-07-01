@@ -6,12 +6,14 @@ import com.app.criba.domain.model.*
 // ========== Terrain Mappers ==========
 fun TerrainEntity.toDomain(): Terrain = Terrain(
     id = id, name = name, surface = surface, soilType = soilType,
-    latitude = latitude, longitude = longitude, userId = userId, isSynced = isSynced
+    latitude = latitude, longitude = longitude, polygon = polygon,
+    userId = userId, isSynced = isSynced
 )
 
 fun Terrain.toEntity(): TerrainEntity = TerrainEntity(
     id = id, name = name, surface = surface, soilType = soilType,
-    latitude = latitude, longitude = longitude, userId = userId, isSynced = isSynced
+    latitude = latitude, longitude = longitude, polygon = polygon,
+    userId = userId, isSynced = isSynced
 )
 
 // ========== CropCycle Mappers ==========
