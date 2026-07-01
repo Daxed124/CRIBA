@@ -141,7 +141,7 @@ fun CicloActualTab(
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onCosechar(volumenTexto.toDoubleOrNull())
+                    onCosechar(volumenTexto.replace(',', '.').toDoubleOrNull())
                     showCosecharDialog = false
                 }) { Text("Cosechar") }
             },

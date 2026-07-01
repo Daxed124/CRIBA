@@ -84,7 +84,7 @@ class FinanceViewModel @Inject constructor(
     fun saveTransaction() {
         val state = _uiState.value
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val type = if (state.isIncome) TransactionType.INGRESO else TransactionType.GASTO
             val category = if (!state.isIncome && state.category.isNotBlank()) {
                 try { ExpenseCategory.valueOf(state.category) } catch (_: Exception) { null }
@@ -93,7 +93,8 @@ class FinanceViewModel @Inject constructor(
             val transaction = Transaction(
                 cycleId = cycleId,
                 type = type,
-                amount = state.amount.toDoubleOrNull() ?: 0.0,
+                // Acepta coma o punto decimal (el teclado en español escribe coma)
+                amount = state.amount.replace(',', '.').toDoubleOrNull() ?: 0.0,
                 category = category,
                 description = state.description,
                 date = System.currentTimeMillis()

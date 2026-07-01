@@ -65,8 +65,9 @@ class ClimateViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             val record = ClimateRecord(
                 cycleId = cycleId,
-                rainfall = state.rainfall.toDoubleOrNull() ?: 0.0,
-                temperature = state.temperature.toDoubleOrNull() ?: 0.0,
+                // Acepta coma o punto decimal (el teclado en español escribe coma)
+                rainfall = state.rainfall.replace(',', '.').toDoubleOrNull() ?: 0.0,
+                temperature = state.temperature.replace(',', '.').toDoubleOrNull() ?: 0.0,
                 droughtStage = DroughtStage.valueOf(state.droughtStage),
                 date = System.currentTimeMillis()
             )

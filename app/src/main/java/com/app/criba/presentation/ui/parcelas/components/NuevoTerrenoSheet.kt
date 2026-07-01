@@ -39,8 +39,9 @@ fun NuevoTerrenoSheet(
     val soilTypes = listOf("Arcilloso", "Franco", "Arenoso", "Limoso", "Franco-Arcilloso")
     var expanded by remember { mutableStateOf(false) }
 
-    val isValid = nombre.isNotBlank() &&
-        hectareas.toDoubleOrNull() != null && hectareas.toDoubleOrNull()!! > 0 &&
+    // Acepta coma o punto decimal (el teclado en español escribe coma)
+    val hectareasNum = hectareas.replace(',', '.').toDoubleOrNull()
+    val isValid = nombre.isNotBlank() && hectareasNum != null && hectareasNum > 0 &&
         tipoSuelo.isNotBlank()
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -66,7 +67,7 @@ fun NuevoTerrenoSheet(
                 onValueChange = { hectareas = it },
                 label = { Text("Hectáreas") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                isError = hectareas.isNotBlank() && (hectareas.toDoubleOrNull() == null || hectareas.toDoubleOrNull()!! <= 0),
+                isError = hectareas.isNotBlank() && (hectareasNum == null || hectareasNum <= 0),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -141,7 +142,7 @@ fun NuevoTerrenoSheet(
                             Terrain(
                                 userId = "local_user",
                                 name = nombre,
-                                surface = hectareas.toDoubleOrNull() ?: 0.0,
+                                surface = hectareasNum ?: 0.0,
                                 soilType = tipoSuelo,
                                 latitude = latitud ?: 0.0,
                                 longitude = longitud ?: 0.0

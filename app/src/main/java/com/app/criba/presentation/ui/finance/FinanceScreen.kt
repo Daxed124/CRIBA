@@ -202,8 +202,25 @@ fun FinanceForm(viewModel: FinanceViewModel, uiState: com.app.criba.presentation
             modifier = Modifier.fillMaxWidth()
         )
 
+        // Validación: monto > 0 (acepta coma o punto) y categoría obligatoria en gastos
+        val montoValido = (uiState.amount.replace(',', '.').toDoubleOrNull() ?: 0.0) > 0.0
+        val formValido = montoValido && (uiState.isIncome || uiState.category.isNotBlank())
+
+        if (uiState.errorMessage != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = uiState.errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = viewModel::saveTransaction, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = viewModel::saveTransaction,
+            enabled = formValido && !uiState.isLoading,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Guardar Transacción")
         }
         Spacer(modifier = Modifier.height(8.dp))
