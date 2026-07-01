@@ -3,6 +3,7 @@ package com.app.criba.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.criba.domain.model.CropCycle
+import com.app.criba.domain.model.PhenologicalState
 import com.app.criba.domain.model.Terrain
 import com.app.criba.domain.model.TerrainWithCycles
 import com.app.criba.domain.repository.CycleRepository
@@ -89,5 +90,29 @@ class ParcelasViewModel @Inject constructor(
                 _uiState.update { it.copy(error = e.message) }
             }
         }
+    }
+
+    /**
+     * Cierra (cosecha) un ciclo: marca la fecha de fin de hoy, guarda el volumen cosechado
+     * y lo pasa a estado FINALIZADO. Así aparece en el Historial y libera el terreno para uno nuevo.
+     */
+    fun cerrarCiclo(cycle: CropCycle, volumenKg: Double?) {
+        viewModelScope.launch {
+            try {
+                cycleRepository.updateCycle(
+                    cycle.copy(
+                        endDate = System.currentTimeMillis(),
+                        harvestedVolumeKg = volumenKg,
+                        phenologicalState = PhenologicalState.FINALIZADO
+                    )
+                )
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

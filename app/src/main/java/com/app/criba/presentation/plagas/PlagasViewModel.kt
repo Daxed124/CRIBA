@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.criba.domain.model.PestIncident
 import com.app.criba.domain.model.Severity
+import com.app.criba.domain.repository.CycleRepository
 import com.app.criba.domain.repository.PestRepository
 import com.app.criba.util.LocationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlagasViewModel @Inject constructor(
     private val plagasRepo: PestRepository,
+    private val cycleRepository: CycleRepository,
     private val locationHelper: LocationHelper
 ) : ViewModel() {
 
@@ -32,6 +35,34 @@ class PlagasViewModel @Inject constructor(
             } catch(e: Exception) {
                 _uiState.update { it.copy(error = e.message, isLoading = false) }
             }
+        }
+    }
+
+    /**
+     * Carga la salud consolidada: agrega las plagas de TODOS los ciclos activos.
+     * Usado por la pestaña "Salud" del menú inferior (sin ciclo específico).
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun cargarSaludGlobal() {
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            cycleRepository.getAllCycles()
+                .flatMapLatest { cycles ->
+                    val activeIds = cycles.filter { it.endDate == null }.map { it.id }
+                    if (activeIds.isEmpty()) {
+                        flowOf(emptyList())
+                    } else {
+                        combine(activeIds.map { plagasRepo.getPestsByCycleId(it) }) { arr ->
+                            arr.toList().flatten()
+                        }
+                    }
+                }
+                .catch { e -> _uiState.update { it.copy(error = e.message, isLoading = false) } }
+                .collect { pests ->
+                    _uiState.update {
+                        it.copy(plagas = pests, healthScore = calcularScoreSalud(pests), isLoading = false)
+                    }
+                }
         }
     }
 

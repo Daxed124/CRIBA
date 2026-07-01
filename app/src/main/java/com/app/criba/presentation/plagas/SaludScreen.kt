@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +26,11 @@ fun SaludScreen(
     viewModel: PlagasViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
+    LaunchedEffect(Unit) {
+        viewModel.cargarSaludGlobal()
+    }
+
     val plagasCriticas = uiState.plagas.count { it.severity == Severity.CRITICO }
     val plagasMedias = uiState.plagas.count { it.severity == Severity.MEDIO }
     val plagasBajas = uiState.plagas.count { it.severity == Severity.BAJO }

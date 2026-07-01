@@ -82,7 +82,16 @@ fun DetalleParcelaScreen(
             }
 
             when (selectedTabIndex) {
-                0 -> CicloActualTab(terrenoData.activeCycle, onNavigateToPlagas, onNavigateToClima, onNavigateToFinanzas, onIniciarCiclo = { viewModel.toggleNuevoCicloSheet(true, terrenoId) })
+                0 -> CicloActualTab(
+                    activeCycle = terrenoData.activeCycle,
+                    onNavigateToPlagas = onNavigateToPlagas,
+                    onNavigateToClima = onNavigateToClima,
+                    onNavigateToFinanzas = onNavigateToFinanzas,
+                    onIniciarCiclo = { viewModel.toggleNuevoCicloSheet(true, terrenoId) },
+                    onCosechar = { volumen ->
+                        terrenoData.activeCycle?.let { viewModel.cerrarCiclo(it, volumen) }
+                    }
+                )
                 1 -> HistorialTab(terrenoData.cycles.filter { it.endDate != null })
                 2 -> MapaTab()
             }
@@ -104,8 +113,44 @@ fun CicloActualTab(
     onNavigateToPlagas: (Long) -> Unit,
     onNavigateToClima: (Long) -> Unit,
     onNavigateToFinanzas: (Long) -> Unit,
-    onIniciarCiclo: () -> Unit
+    onIniciarCiclo: () -> Unit,
+    onCosechar: (Double?) -> Unit
 ) {
+    var showCosecharDialog by remember { mutableStateOf(false) }
+
+    if (showCosecharDialog) {
+        var volumenTexto by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showCosecharDialog = false },
+            title = { Text("Cosechar / Cerrar ciclo") },
+            text = {
+                Column {
+                    Text("Se cerrará el ciclo con la fecha de hoy y pasará al Historial.")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = volumenTexto,
+                        onValueChange = { volumenTexto = it },
+                        label = { Text("Volumen cosechado (Kg) — opcional") },
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                            keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal
+                        ),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onCosechar(volumenTexto.toDoubleOrNull())
+                    showCosecharDialog = false
+                }) { Text("Cosechar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCosecharDialog = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
     if (activeCycle == null) {
         Column(
             modifier = Modifier
@@ -121,7 +166,9 @@ fun CicloActualTab(
             }
         }
     } else {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
         val diasTranscurridos = ((System.currentTimeMillis() - activeCycle.startDate) / (1000 * 60 * 60 * 24)).toInt()
         val progreso = (diasTranscurridos.toFloat() / 120f).coerceIn(0f, 1f) // Asumiendo ciclo 120 días
 
@@ -150,6 +197,15 @@ fun CicloActualTab(
                 Button(onClick = { onNavigateToClima(activeCycle.id) }) { Text("🌧 Clima") }
                 Button(onClick = { onNavigateToFinanzas(activeCycle.id) }) { Text("💰 Finanzas") }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { showCosecharDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+                Text("🌾 Cosechar / Cerrar ciclo")
+            }
         }
     }
 }
@@ -161,7 +217,9 @@ fun HistorialTab(pastCycles: List<CropCycle>) {
             Text("No hay ciclos anteriores.")
         }
     } else {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)

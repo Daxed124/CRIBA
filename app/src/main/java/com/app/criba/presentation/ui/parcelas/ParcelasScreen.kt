@@ -28,8 +28,18 @@ fun ParcelasScreen(
     onNavigateToDetalle: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Muestra el error una vez y lo limpia para que no quede fijo en pantalla
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            viewModel.clearError()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.toggleNuevoTerrenoSheet(true) },
@@ -87,12 +97,6 @@ fun ParcelasScreen(
                     onDismiss = { viewModel.toggleNuevoCicloSheet(false) },
                     onGuardar = { viewModel.iniciarCiclo(it) }
                 )
-            }
-            
-            uiState.error?.let { errorMsg ->
-                Snackbar(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
-                    Text(errorMsg)
-                }
             }
         }
     }

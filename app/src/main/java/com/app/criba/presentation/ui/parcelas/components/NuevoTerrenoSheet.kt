@@ -1,28 +1,47 @@
 package com.app.criba.presentation.ui.parcelas.components
 
+import android.Manifest
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.app.criba.domain.model.Terrain
+import com.app.criba.util.LocationHelper
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun NuevoTerrenoSheet(
     onDismiss: () -> Unit,
     onGuardar: (Terrain) -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val locationHelper = remember { LocationHelper(context) }
+    val locationPermission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+
     var nombre by remember { mutableStateOf("") }
     var hectareas by remember { mutableStateOf("") }
     var tipoSuelo by remember { mutableStateOf("") }
-    
+
+    var latitud by remember { mutableStateOf<Double?>(null) }
+    var longitud by remember { mutableStateOf<Double?>(null) }
+    var cargandoUbicacion by remember { mutableStateOf(false) }
+
     val soilTypes = listOf("Arcilloso", "Franco", "Arenoso", "Limoso", "Franco-Arcilloso")
     var expanded by remember { mutableStateOf(false) }
 
-    val isValid = nombre.isNotBlank() && hectareas.toDoubleOrNull() != null && hectareas.toDoubleOrNull()!! > 0
+    val isValid = nombre.isNotBlank() &&
+        hectareas.toDoubleOrNull() != null && hectareas.toDoubleOrNull()!! > 0 &&
+        tipoSuelo.isNotBlank()
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
@@ -81,11 +100,38 @@ fun NuevoTerrenoSheet(
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Button(onClick = { /* TODO: GPS integration in Phase 7 */ }) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    enabled = !cargandoUbicacion,
+                    onClick = {
+                        if (locationPermission.status.isGranted) {
+                            cargandoUbicacion = true
+                            scope.launch {
+                                val loc = locationHelper.getCurrentLocation()
+                                    ?: locationHelper.getLastKnownLocation()
+                                latitud = loc?.first
+                                longitud = loc?.second
+                                cargandoUbicacion = false
+                            }
+                        } else {
+                            locationPermission.launchPermissionRequest()
+                        }
+                    }
+                ) {
                     Text("📍 Obtener Ubicación")
                 }
-                Text("Sin coordenadas", modifier = Modifier.padding(top = 12.dp))
+                when {
+                    cargandoUbicacion -> CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                    latitud != null -> Text(
+                        "%.4f, %.4f".format(latitud, longitud),
+                        modifier = Modifier.padding(top = 12.dp)
+                    )
+                    else -> Text("Sin coordenadas", modifier = Modifier.padding(top = 12.dp))
+                }
             }
 
             Button(
@@ -97,8 +143,8 @@ fun NuevoTerrenoSheet(
                                 name = nombre,
                                 surface = hectareas.toDoubleOrNull() ?: 0.0,
                                 soilType = tipoSuelo,
-                                latitude = 0.0, // Placeholder
-                                longitude = 0.0 // Placeholder
+                                latitude = latitud ?: 0.0,
+                                longitude = longitud ?: 0.0
                             )
                         )
                     }

@@ -27,9 +27,13 @@ fun NuevoCicloSheet(
     var endDate by remember { mutableStateOf<Long?>(null) }
     val endDatePickerState = rememberDatePickerState()
 
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
 
-    val isValid = cultivo.isNotBlank() && startDate != null && endDate != null && startDate!! < endDate!!
+    // La fecha de cosecha estimada es opcional; si se indica, debe ser posterior a la siembra.
+    val isValid = cultivo.isNotBlank() && startDate != null &&
+        (endDate == null || startDate!! < endDate!!)
 
     if (showStartDatePicker) {
         DatePickerDialog(
@@ -88,7 +92,7 @@ fun NuevoCicloSheet(
             }
 
             OutlinedButton(onClick = { showEndDatePicker = true }, modifier = Modifier.fillMaxWidth()) {
-                Text(endDate?.let { "Cosecha Estimada: ${formatter.format(Date(it))}" } ?: "Seleccionar Cosecha Estimada")
+                Text(endDate?.let { "Cosecha Estimada: ${formatter.format(Date(it))}" } ?: "Cosecha Estimada (opcional)")
             }
 
             if (startDate != null && endDate != null && startDate!! >= endDate!!) {
