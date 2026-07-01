@@ -93,7 +93,7 @@ fun DetalleParcelaScreen(
                     }
                 )
                 1 -> HistorialTab(terrenoData.cycles.filter { it.endDate != null })
-                2 -> MapaTab()
+                2 -> MapaTab(terrenoData.terrain)
             }
 
             if (uiState.isNuevoCicloSheetVisible) {
@@ -239,8 +239,11 @@ fun HistorialTab(pastCycles: List<CropCycle>) {
 }
 
 @Composable
-fun MapaTab() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("MapaTerrenoMini (Disponible en Fase 10)", style = MaterialTheme.typography.titleMedium)
-    }
+fun MapaTab(terrain: com.app.criba.domain.model.Terrain) {
+    com.app.criba.presentation.ui.map.MapaTerrenoMini(
+        latitud = terrain.latitude,
+        longitud = terrain.longitude,
+        nombre = terrain.name,
+        modifier = Modifier.fillMaxSize()
+    )
 }

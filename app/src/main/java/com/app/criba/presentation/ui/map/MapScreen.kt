@@ -1,25 +1,37 @@
 package com.app.criba.presentation.ui.map
 
+import android.Manifest
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.criba.domain.model.Terrain
 import com.app.criba.presentation.state.MapUiState
 import com.app.criba.presentation.viewmodel.MapViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** Un terreno tiene ubicación válida si no está en (0,0) (placeholder). */
+private fun Terrain.tieneCoordenadas(): Boolean = latitude != 0.0 || longitude != 0.0
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MapScreen(
     onNavigateToTerrainForm: () -> Unit,
@@ -27,11 +39,28 @@ fun MapScreen(
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val locationPermission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
 
-    // Default center for Mexico City as an example
-    val defaultLocation = LatLng(19.4326, -99.1332)
+    // Centro de México por defecto
+    val defaultLocation = LatLng(23.6345, -102.5528)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 5f)
+    }
+
+    // Pide el permiso de ubicación una vez al entrar
+    LaunchedEffect(Unit) {
+        if (!locationPermission.status.isGranted) locationPermission.launchPermissionRequest()
+    }
+
+    // Cuando llegan los terrenos, centra la cámara en el primero con coordenadas
+    LaunchedEffect(uiState) {
+        val s = uiState
+        if (s is MapUiState.Success) {
+            s.terrains.firstOrNull { it.tieneCoordenadas() }?.let {
+                cameraPositionState.position =
+                    CameraPosition.fromLatLngZoom(LatLng(it.latitude, it.longitude), 12f)
+            }
+        }
     }
 
     Scaffold(
@@ -63,11 +92,19 @@ fun MapScreen(
                     )
                 }
                 is MapUiState.Success -> {
+                    val terrenosConCoords = state.terrains.filter { it.tieneCoordenadas() }
+
                     GoogleMap(
                         modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPositionState
+                        cameraPositionState = cameraPositionState,
+                        properties = MapProperties(isMyLocationEnabled = locationPermission.status.isGranted),
+                        uiSettings = MapUiSettings(
+                            zoomControlsEnabled = true,
+                            myLocationButtonEnabled = true,
+                            mapToolbarEnabled = false
+                        )
                     ) {
-                        state.terrains.forEach { terrain ->
+                        terrenosConCoords.forEach { terrain ->
                             Marker(
                                 state = MarkerState(position = LatLng(terrain.latitude, terrain.longitude)),
                                 title = terrain.name,
@@ -76,6 +113,19 @@ fun MapScreen(
                                     onNavigateToCycle(terrain.id)
                                     true
                                 }
+                            )
+                        }
+                    }
+
+                    if (terrenosConCoords.isEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                "Ningún terreno tiene ubicación GPS. Al crear un terreno, usa \"Obtener Ubicación\" para que aparezca en el mapa.",
+                                modifier = Modifier.padding(16.dp)
                             )
                         }
                     }
