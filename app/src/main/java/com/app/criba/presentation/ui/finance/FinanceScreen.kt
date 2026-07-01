@@ -159,7 +159,8 @@ fun FinanceForm(viewModel: FinanceViewModel, uiState: com.app.criba.presentation
             value = uiState.amount,
             onValueChange = viewModel::onAmountChange,
             label = { Text("Monto") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            prefix = { Text("$") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
         )
         
@@ -171,7 +172,7 @@ fun FinanceForm(viewModel: FinanceViewModel, uiState: com.app.criba.presentation
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = uiState.category,
+                    value = ExpenseCategory.entries.find { it.name == uiState.category }?.displayName ?: "",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text("Categoría") },
@@ -181,9 +182,9 @@ fun FinanceForm(viewModel: FinanceViewModel, uiState: com.app.criba.presentation
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    ExpenseCategory.values().forEach { cat ->
+                    ExpenseCategory.entries.forEach { cat ->
                         DropdownMenuItem(
-                            text = { Text(cat.name) },
+                            text = { Text(cat.displayName) },
                             onClick = {
                                 viewModel.onCategoryChange(cat.name)
                                 expanded = false
@@ -214,7 +215,7 @@ fun FinanceForm(viewModel: FinanceViewModel, uiState: com.app.criba.presentation
 
 @Composable
 fun TransactionItem(tx: Transaction) {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
     val isIncome = tx.type == com.app.criba.domain.model.TransactionType.INGRESO
     val color = if (isIncome) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
     val signo = if (isIncome) "+" else "−"

@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -107,7 +108,7 @@ fun PlagaCard(plaga: PestIncident) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(plaga.name, style = MaterialTheme.typography.titleMedium)
-                Text(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(plaga.date)), style = MaterialTheme.typography.bodySmall)
+                Text(remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }.format(Date(plaga.date)), style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.height(4.dp))
                 AssistChip(
                     onClick = { },

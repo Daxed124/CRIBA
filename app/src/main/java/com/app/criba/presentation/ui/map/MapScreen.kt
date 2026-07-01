@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -52,13 +55,16 @@ fun MapScreen(
         if (!locationPermission.status.isGranted) locationPermission.launchPermissionRequest()
     }
 
-    // Cuando llegan los terrenos, centra la cámara en el primero con coordenadas
+    // Centra la cámara en el primer terreno con coordenadas UNA sola vez
+    // (para no interrumpir el paneo del usuario en cada actualización de datos)
+    var camaraCentrada by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(uiState) {
         val s = uiState
-        if (s is MapUiState.Success) {
+        if (!camaraCentrada && s is MapUiState.Success) {
             s.terrains.firstOrNull { it.tieneCoordenadas() }?.let {
                 cameraPositionState.position =
                     CameraPosition.fromLatLngZoom(LatLng(it.latitude, it.longitude), 12f)
+                camaraCentrada = true
             }
         }
     }

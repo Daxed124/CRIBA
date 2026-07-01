@@ -143,16 +143,16 @@ fun ClimateForm(viewModel: ClimateViewModel, uiState: com.app.criba.presentation
             value = uiState.rainfall,
             onValueChange = viewModel::onRainfallChange,
             label = { Text("Precipitación (mm)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = uiState.temperature,
             onValueChange = viewModel::onTemperatureChange,
             label = { Text("Temperatura Media (°C)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -163,7 +163,7 @@ fun ClimateForm(viewModel: ClimateViewModel, uiState: com.app.criba.presentation
             onExpandedChange = { expanded = !expanded }
         ) {
             OutlinedTextField(
-                value = uiState.droughtStage,
+                value = DroughtStage.entries.find { it.name == uiState.droughtStage }?.displayName ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Etapa de Sequía") },
@@ -173,9 +173,9 @@ fun ClimateForm(viewModel: ClimateViewModel, uiState: com.app.criba.presentation
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DroughtStage.values().forEach { stage ->
+                DroughtStage.entries.forEach { stage ->
                     DropdownMenuItem(
-                        text = { Text(stage.name) },
+                        text = { Text(stage.displayName) },
                         onClick = {
                             viewModel.onDroughtStageChange(stage.name)
                             expanded = false
@@ -198,8 +198,8 @@ fun ClimateForm(viewModel: ClimateViewModel, uiState: com.app.criba.presentation
 
 @Composable
 fun ClimateItem(record: ClimateRecord) {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    
+    val formatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -212,7 +212,7 @@ fun ClimateItem(record: ClimateRecord) {
                 Text(text = "Temp: ${record.temperature}°C")
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Sequía: ${record.droughtStage.name}", style = MaterialTheme.typography.bodySmall)
+            Text(text = "Sequía: ${record.droughtStage.displayName}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

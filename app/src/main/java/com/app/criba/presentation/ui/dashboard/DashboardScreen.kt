@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.app.criba.presentation.state.DashboardUiState
 import com.app.criba.presentation.viewmodel.DashboardViewModel
 import com.app.criba.presentation.ui.dashboard.components.*
@@ -21,6 +23,11 @@ fun DashboardScreen(
     onNavigateToMapa: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Recarga los datos cada vez que la pantalla vuelve a primer plano
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.refresh()
+    }
 
     if (uiState is DashboardUiState.Loading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

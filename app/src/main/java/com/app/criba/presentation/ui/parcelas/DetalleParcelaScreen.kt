@@ -183,7 +183,7 @@ fun CicloActualTab(
                     Spacer(modifier = Modifier.height(8.dp))
                     AssistChip(
                         onClick = { },
-                        label = { Text(activeCycle.phenologicalState.name) }
+                        label = { Text(activeCycle.phenologicalState.displayName) }
                     )
                 }
             }

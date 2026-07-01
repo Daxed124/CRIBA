@@ -33,6 +33,11 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
     }
 
+    /** Recarga los datos del dashboard (p. ej. al volver a la pantalla). */
+    fun refresh() {
+        loadDashboardData()
+    }
+
     private fun loadDashboardData() {
         viewModelScope.launch {
             try {
