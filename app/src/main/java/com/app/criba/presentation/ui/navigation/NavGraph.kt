@@ -57,10 +57,7 @@ fun CribaNavGraph(
         }
 
         composable(Screen.Historial.route) {
-            // Placeholder for Phase 9
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Pantalla de Historial Climático (En Desarrollo)")
-            }
+            com.app.criba.presentation.ui.historial.HistorialScreen()
         }
 
         composable(Screen.Salud.route) {

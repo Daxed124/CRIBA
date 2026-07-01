@@ -1,8 +1,10 @@
 package com.app.criba.presentation.ui.climate
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.app.criba.domain.model.ClimaResumen
 import com.app.criba.domain.model.ClimateRecord
 import com.app.criba.domain.model.DroughtStage
+import com.app.criba.presentation.ui.climate.components.LluviaChart
+import com.app.criba.presentation.ui.climate.components.TemperaturaChart
 import com.app.criba.presentation.viewmodel.ClimateViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,16 +54,83 @@ fun ClimateScreen(
             if (uiState.isFormVisible) {
                 ClimateForm(viewModel, uiState)
             } else {
-                if (uiState.records.isEmpty()) {
-                    Text("No hay registros.", modifier = Modifier.padding(16.dp))
-                } else {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(uiState.records) { record ->
-                            ClimateItem(record)
-                        }
-                    }
-                }
+                ClimaContenido(records = uiState.records, resumen = uiState.resumen)
             }
+        }
+    }
+}
+
+@Composable
+fun ClimaContenido(records: List<ClimateRecord>, resumen: ClimaResumen) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item { ResumenClimaRow(resumen) }
+
+        item {
+            ChartCard(title = "TEMPERATURA (°C)") {
+                TemperaturaChart(records, Modifier.fillMaxWidth().height(180.dp))
+            }
+        }
+        item {
+            ChartCard(title = "PRECIPITACIÓN (mm)") {
+                LluviaChart(records, Modifier.fillMaxWidth().height(150.dp))
+            }
+        }
+
+        if (records.isEmpty()) {
+            item { Text("No hay registros.", modifier = Modifier.padding(16.dp)) }
+        } else {
+            item {
+                Text(
+                    "REGISTROS",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+                )
+            }
+            items(records) { record -> ClimateItem(record) }
+        }
+    }
+}
+
+@Composable
+fun ResumenClimaRow(resumen: ClimaResumen) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ClimaMiniCard("Temp. Promedio", String.format(Locale.US, "%.1f °C", resumen.promedioTemp))
+        ClimaMiniCard("Lluvia Acumulada", String.format(Locale.US, "%.0f mm", resumen.lluviaAcumulada))
+        ClimaMiniCard("Días sin lluvia", "${resumen.diasSinLluvia}")
+        ClimaMiniCard("Sequía Actual", resumen.etapaActual.displayName)
+    }
+}
+
+@Composable
+fun ClimaMiniCard(label: String, value: String) {
+    Card(
+        modifier = Modifier.width(140.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+@Composable
+fun ChartCard(title: String, content: @Composable () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Spacer(modifier = Modifier.height(8.dp))
+            content()
         }
     }
 }

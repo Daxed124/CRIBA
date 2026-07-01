@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.criba.domain.model.ClimateRecord
 import com.app.criba.domain.model.DroughtStage
 import com.app.criba.domain.repository.ClimateRepository
+import com.app.criba.domain.usecase.GenerarResumenClimaUseCase
 import com.app.criba.domain.usecase.RecordClimateUseCase
 import com.app.criba.presentation.state.ClimateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class ClimateViewModel @Inject constructor(
     private val climateRepository: ClimateRepository,
     private val recordClimateUseCase: RecordClimateUseCase,
+    private val generarResumenClima: GenerarResumenClimaUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -36,7 +38,11 @@ class ClimateViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             climateRepository.getClimateRecordsByCycleId(cycleId)
                 .catch { e -> _uiState.update { it.copy(isLoading = false, errorMessage = e.message) } }
-                .collect { records -> _uiState.update { it.copy(isLoading = false, records = records) } }
+                .collect { records ->
+                    _uiState.update {
+                        it.copy(isLoading = false, records = records, resumen = generarResumenClima(records))
+                    }
+                }
         }
     }
 
