@@ -10,6 +10,7 @@ import com.app.criba.domain.usecase.GenerarResumenClimaUseCase
 import com.app.criba.domain.usecase.RecordClimateUseCase
 import com.app.criba.presentation.state.ClimateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,10 +33,16 @@ class ClimateViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ClimateUiState())
     val uiState: StateFlow<ClimateUiState> = _uiState.asStateFlow()
 
+    private var recordsJob: Job? = null
+
     init { loadRecords() }
 
+    /** Vuelve a cargar los registros del ciclo (botón de actualizar). */
+    fun refresh() { loadRecords() }
+
     private fun loadRecords() {
-        viewModelScope.launch {
+        recordsJob?.cancel()
+        recordsJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             climateRepository.getClimateRecordsByCycleId(cycleId)
                 .catch { e -> _uiState.update { it.copy(isLoading = false, errorMessage = e.message) } }

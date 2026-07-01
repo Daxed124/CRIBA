@@ -49,11 +49,13 @@ fun CribaBottomBar(navController: NavController) {
                     Text(text = item.label)
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.White,
+                    // Solo el ítem seleccionado cambia de color (pill dorado + icono oscuro)
+                    selectedIconColor = CribaPrimary,
                     selectedTextColor = Color.White,
                     indicatorColor = CribaAccent,
-                    unselectedIconColor = CribaSecondary.copy(alpha = 0.6f),
-                    unselectedTextColor = CribaSecondary.copy(alpha = 0.6f)
+                    // No seleccionados: blanco tenue, claros y legibles sobre la barra verde
+                    unselectedIconColor = Color.White.copy(alpha = 0.7f),
+                    unselectedTextColor = Color.White.copy(alpha = 0.7f)
                 ),
                 alwaysShowLabel = true
             )
