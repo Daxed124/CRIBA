@@ -1,14 +1,17 @@
 package com.app.criba.presentation.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.app.criba.R
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.criba.presentation.state.LoginUiState
 import com.app.criba.presentation.viewmodel.LoginViewModel
@@ -36,10 +39,10 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Criba",
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.primary
+        Image(
+            painter = painterResource(id = R.drawable.logo_criba),
+            contentDescription = "Logo CRIBA",
+            modifier = Modifier.size(160.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
