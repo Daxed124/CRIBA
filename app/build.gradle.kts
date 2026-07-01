@@ -101,11 +101,6 @@ dependencies {
     // Coil (images)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // Google Credential Manager (Auth)
-    implementation("androidx.credentials:credentials:1.2.2")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-
     // Google Maps Compose
     implementation("com.google.maps.android:maps-compose:4.3.3")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
