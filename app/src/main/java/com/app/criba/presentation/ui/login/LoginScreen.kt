@@ -1,8 +1,11 @@
 package com.app.criba.presentation.ui.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +30,8 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var displayName by remember { mutableStateOf("") }
+    var aceptaTerminos by remember { mutableStateOf(false) }
+    var showTerminos by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Authenticated) {
@@ -80,6 +85,24 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        // Términos y condiciones (obligatorio para registrarse)
+        if (isRegisterMode) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(checked = aceptaTerminos, onCheckedChange = { aceptaTerminos = it })
+                Text("Acepto los ", style = MaterialTheme.typography.bodySmall)
+                Text(
+                    "términos y condiciones",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { showTerminos = true }
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         when (val state = uiState) {
@@ -98,7 +121,7 @@ fun LoginScreen(
 
         // Los campos son obligatorios: el botón se habilita solo si están completos
         val isFormValid = if (isRegisterMode) {
-            displayName.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+            displayName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && aceptaTerminos
         } else {
             email.isNotBlank() && password.isNotBlank()
         }
@@ -122,5 +145,28 @@ fun LoginScreen(
         TextButton(onClick = { isRegisterMode = !isRegisterMode }) {
             Text(if (isRegisterMode) "¿Ya tienes cuenta? Inicia Sesión" else "¿No tienes cuenta? Regístrate")
         }
+    }
+
+    if (showTerminos) {
+        AlertDialog(
+            onDismissRequest = { showTerminos = false },
+            title = { Text("Términos y Condiciones") },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    Text(
+                        com.app.criba.util.AppTexts.TERMINOS_Y_CONDICIONES,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { aceptaTerminos = true; showTerminos = false }) {
+                    Text("Aceptar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTerminos = false }) { Text("Cerrar") }
+            }
+        )
     }
 }

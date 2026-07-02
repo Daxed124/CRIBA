@@ -81,13 +81,21 @@ fun SeleccionarAreaDialog(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     if (points.size >= 3) {
+                        val ha = GeoUtils.areaHectares(points)
+                        val m2 = GeoUtils.areaSquareMeters(points)
+                        val excede = ha > 4.0
                         Text(
-                            "Área: %.2f ha (%d puntos)".format(
-                                Locale.US, GeoUtils.areaHectares(points), points.size
-                            ),
+                            "Área: %.3f ha  ·  %,.0f m²".format(Locale.US, ha, m2),
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF1B4332)
+                            color = if (excede) Color(0xFFC62828) else Color(0xFF1B4332)
                         )
+                        if (excede) {
+                            Text(
+                                "El área supera el límite de 4 ha",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Color(0xFFC62828)
+                            )
+                        }
                     } else if (points.isNotEmpty()) {
                         Text(
                             "${points.size} punto(s) — marca al menos 3",
@@ -123,7 +131,7 @@ fun SeleccionarAreaDialog(
 
                 Button(
                     onClick = { onConfirm(points) },
-                    enabled = points.size >= 3
+                    enabled = points.size >= 3 && GeoUtils.areaHectares(points) <= 4.0
                 ) { Text("Confirmar") }
             }
         }

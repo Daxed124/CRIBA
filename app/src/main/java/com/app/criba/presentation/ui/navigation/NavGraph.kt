@@ -60,6 +60,16 @@ fun CribaNavGraph(
             com.app.criba.presentation.ui.historial.HistorialScreen()
         }
 
+        composable(Screen.Settings.route) {
+            com.app.criba.presentation.ui.settings.SettingsScreen(
+                onLoggedOut = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Salud.route) {
             com.app.criba.presentation.plagas.SaludScreen()
         }

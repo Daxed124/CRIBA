@@ -49,4 +49,7 @@ object GeoUtils {
         }
         return abs(sum) / 2.0 / 10000.0
     }
+
+    /** Área del polígono en metros cuadrados. */
+    fun areaSquareMeters(points: List<LatLng>): Double = areaHectares(points) * 10000.0
 }

@@ -112,6 +112,21 @@ class AuthRepositoryImpl @Inject constructor(
         }.firstOrNull()
     }
 
+    override suspend fun updateProfile(displayName: String, photoUrl: String?): User {
+        val current = getCurrentUser() ?: throw Exception("No hay sesión activa")
+        // Actualiza el usuario en Room (si existe)
+        val entity = userDao.getUserByEmail(current.email)
+        if (entity != null) {
+            userDao.insertUser(entity.copy(displayName = displayName, photoUrl = photoUrl))
+        }
+        // Actualiza la sesión persistida
+        context.sessionDataStore.edit { prefs ->
+            prefs[KEY_DISPLAY_NAME] = displayName
+            prefs[KEY_PHOTO_URL] = photoUrl ?: ""
+        }
+        return current.copy(displayName = displayName, photoUrl = photoUrl)
+    }
+
     override suspend fun signOut() {
         context.sessionDataStore.edit { it.clear() }
     }

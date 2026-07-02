@@ -65,7 +65,13 @@ fun DetalleParcelaScreen(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Hectáreas: ${terrenoData.terrain.surface}")
+                    Text(
+                        "Superficie: %.3f ha  ·  %,.0f m²".format(
+                            java.util.Locale.US,
+                            terrenoData.terrain.surface,
+                            terrenoData.terrain.surface * 10000.0
+                        )
+                    )
                     Text("Tipo de suelo: ${terrenoData.terrain.soilType}")
                     Text("Coordenadas: Lat ${terrenoData.terrain.latitude} | Lng ${terrenoData.terrain.longitude}")
                 }

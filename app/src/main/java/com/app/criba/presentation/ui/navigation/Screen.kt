@@ -22,6 +22,9 @@ sealed class Screen(val route: String) {
     data object Historial : Screen("historial")
     data object Salud : Screen("salud")
 
+    // Configuración
+    data object Settings : Screen("settings")
+
     // Sub-pantallas
     data object TerrainForm : Screen("terrain_form")
     data object DetalleParcela : Screen("parcela/{terrenoId}") {
@@ -58,7 +61,7 @@ data class BottomNavItem(
 val bottomNavItems = listOf(
     BottomNavItem(
         screen = Screen.Dashboard,
-        label = "Dashboard",
+        label = "Inicio",
         selectedIcon = Icons.Filled.Dashboard,
         unselectedIcon = Icons.Outlined.Dashboard
     ),

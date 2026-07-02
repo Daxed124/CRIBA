@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,9 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.app.criba.presentation.ui.components.CribaPrimary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +37,11 @@ import com.app.criba.presentation.ui.components.CribaPrimary
 fun CribaTopBar(
     title: String,
     showBackButton: Boolean = false,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    showSettings: Boolean = true,
+    onSettingsClick: () -> Unit = {},
+    userName: String? = null,
+    userPhotoUrl: String? = null
 ) {
     TopAppBar(
         title = {
@@ -42,13 +52,15 @@ fun CribaTopBar(
                     color = Color.White,
                     fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = title,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.85f),
-                    fontSize = 16.sp
-                )
+                if (title.isNotBlank()) {
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = title,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontSize = 16.sp
+                    )
+                }
             }
         },
         navigationIcon = {
@@ -65,20 +77,45 @@ fun CribaTopBar(
         actions = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(end = 16.dp)
+                modifier = Modifier.padding(end = 4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF4CAF50))
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Activo",
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
+                if (showBackButton && !userName.isNullOrBlank()) {
+                    // En una sección abierta se muestra el nombre + imagen de la cuenta
+                    Avatar(userPhotoUrl)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = userName,
+                        fontSize = 12.sp,
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 90.dp)
+                    )
+                } else {
+                    // Indicador de sistema activo, a la izquierda del engrane
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFF4CAF50))
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Activo",
+                        fontSize = 11.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+
+                if (showSettings) {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Configuración",
+                            tint = Color.White
+                        )
+                    }
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -88,4 +125,23 @@ fun CribaTopBar(
             actionIconContentColor = Color.White
         )
     )
+}
+
+@Composable
+private fun Avatar(photoUrl: String?) {
+    if (!photoUrl.isNullOrBlank()) {
+        AsyncImage(
+            model = photoUrl,
+            contentDescription = "Perfil",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(28.dp).clip(CircleShape)
+        )
+    } else {
+        Icon(
+            imageVector = Icons.Filled.AccountCircle,
+            contentDescription = "Perfil",
+            tint = Color.White,
+            modifier = Modifier.size(28.dp)
+        )
+    }
 }
