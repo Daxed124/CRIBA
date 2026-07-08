@@ -67,6 +67,8 @@ fun NuevoTerrenoSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 600.dp)
+                .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
                 .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)

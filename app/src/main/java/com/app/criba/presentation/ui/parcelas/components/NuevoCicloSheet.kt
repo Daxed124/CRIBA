@@ -3,6 +3,7 @@ package com.app.criba.presentation.ui.parcelas.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.app.criba.domain.model.CropCycle
@@ -73,6 +74,8 @@ fun NuevoCicloSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 600.dp)
+                .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
                 .padding(bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)

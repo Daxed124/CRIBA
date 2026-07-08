@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -43,7 +47,13 @@ class MainActivity : ComponentActivity() {
                     Screen.Salud.route
                 )
                 
-                val showTopBar = currentRoute != Screen.Login.route
+                // Estas pantallas ya traen su propia barra superior (evita barra doble)
+                val tieneBarraPropia = currentRoute.startsWith("finance") ||
+                    currentRoute.startsWith("climate") ||
+                    currentRoute.startsWith("registrar_plaga") ||
+                    currentRoute.startsWith("parcela")
+
+                val showTopBar = currentRoute != Screen.Login.route && !tieneBarraPropia
 
                 val title = when {
                     currentRoute == Screen.Dashboard.route -> "Inicio"
@@ -90,10 +100,21 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-                    CribaNavGraph(
-                        navController = navController,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    // Diseño adaptativo: el contenido se centra y se limita a un ancho
+                    // comodo en pantallas grandes (tablets); en telefonos ocupa todo el ancho.
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        CribaNavGraph(
+                            navController = navController,
+                            modifier = Modifier
+                                .widthIn(max = 720.dp)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
