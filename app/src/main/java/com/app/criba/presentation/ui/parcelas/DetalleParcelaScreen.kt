@@ -99,7 +99,10 @@ fun DetalleParcelaScreen(
                     }
                 )
                 1 -> HistorialTab(terrenoData.cycles.filter { it.endDate != null })
-                2 -> MapaTab(terrenoData.terrain)
+                2 -> MapaTab(
+                    terrain = terrenoData.terrain,
+                    onEditarArea = { puntos -> viewModel.actualizarArea(terrenoData.terrain, puntos) }
+                )
             }
 
             if (uiState.isNuevoCicloSheetVisible) {
@@ -245,12 +248,39 @@ fun HistorialTab(pastCycles: List<CropCycle>) {
 }
 
 @Composable
-fun MapaTab(terrain: com.app.criba.domain.model.Terrain) {
-    com.app.criba.presentation.ui.map.MapaTerrenoMini(
-        latitud = terrain.latitude,
-        longitud = terrain.longitude,
-        nombre = terrain.name,
-        polygon = terrain.polygon,
-        modifier = Modifier.fillMaxSize()
-    )
+fun MapaTab(
+    terrain: com.app.criba.domain.model.Terrain,
+    onEditarArea: (List<com.google.android.gms.maps.model.LatLng>) -> Unit
+) {
+    var showAreaDialog by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Button(
+            onClick = { showAreaDialog = true },
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Text(if (terrain.polygon.isNullOrBlank()) "🗺 Marcar Área" else "🗺 Editar Área")
+        }
+        com.app.criba.presentation.ui.map.MapaTerrenoMini(
+            latitud = terrain.latitude,
+            longitud = terrain.longitude,
+            nombre = terrain.name,
+            polygon = terrain.polygon,
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+
+    if (showAreaDialog) {
+        val centro = if (terrain.latitude != 0.0 || terrain.longitude != 0.0)
+            com.google.android.gms.maps.model.LatLng(terrain.latitude, terrain.longitude) else null
+        com.app.criba.presentation.ui.parcelas.components.SeleccionarAreaDialog(
+            initialCenter = centro,
+            initialPoints = com.app.criba.util.GeoUtils.polygonFromString(terrain.polygon),
+            onDismiss = { showAreaDialog = false },
+            onConfirm = { puntos ->
+                onEditarArea(puntos)
+                showAreaDialog = false
+            }
+        )
+    }
 }

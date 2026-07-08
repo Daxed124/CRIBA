@@ -115,4 +115,28 @@ class ParcelasViewModel @Inject constructor(
     fun clearError() {
         _uiState.update { it.copy(error = null) }
     }
+
+    /**
+     * Marca o edita el área de una parcela ya creada: recalcula la superficie
+     * (hectáreas) desde el polígono y actualiza también su ubicación al centro.
+     */
+    fun actualizarArea(terrain: com.app.criba.domain.model.Terrain, puntos: List<com.google.android.gms.maps.model.LatLng>) {
+        viewModelScope.launch {
+            try {
+                if (puntos.size < 3) return@launch
+                val ha = com.app.criba.util.GeoUtils.areaHectares(puntos)
+                val centro = com.app.criba.util.GeoUtils.centroid(puntos)
+                terrainRepository.updateTerrain(
+                    terrain.copy(
+                        surface = ha,
+                        polygon = com.app.criba.util.GeoUtils.polygonToString(puntos),
+                        latitude = if (terrain.latitude != 0.0) terrain.latitude else centro.latitude,
+                        longitude = if (terrain.longitude != 0.0) terrain.longitude else centro.longitude
+                    )
+                )
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            }
+        }
+    }
 }
