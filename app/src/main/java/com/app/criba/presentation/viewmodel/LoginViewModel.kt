@@ -48,7 +48,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
             try {
-                val user = authRepository.login(emailTrimmed, passwordHash)
+                // La contraseña nunca viaja ni se guarda en texto plano: se compara su hash SHA-256
+                val user = authRepository.login(emailTrimmed, com.app.criba.util.SecurityUtils.sha256(passwordHash))
                 _uiState.value = LoginUiState.Authenticated(user)
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(e.message ?: "Error al iniciar sesión")
@@ -77,7 +78,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
             try {
-                val user = authRepository.register(emailTrimmed, passwordHash, nameTrimmed)
+                // Se guarda el hash SHA-256, nunca la contraseña en texto plano
+                val user = authRepository.register(emailTrimmed, com.app.criba.util.SecurityUtils.sha256(passwordHash), nameTrimmed)
                 _uiState.value = LoginUiState.Authenticated(user)
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(e.message ?: "Error al registrarse")
